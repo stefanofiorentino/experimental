@@ -5,9 +5,9 @@
 struct light_bulb_t final 
 {
     light_bulb_t() : m_status{false}{}
-    void draw(std::ostream &oss) const
+    void draw(std::ostream &oss, size_t position = 0) const
     {
-        oss << "<light_bulb_t>"<< std::boolalpha << m_status << "</light_bulb_t>\n";
+        oss << std::string(position, ' ') << "<light_bulb_t>"<< std::boolalpha << m_status << "</light_bulb_t>\n";
     }
     void do_switch(bool status)
     {

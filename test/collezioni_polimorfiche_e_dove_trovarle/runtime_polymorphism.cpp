@@ -7,18 +7,18 @@
 #include <light_management/color_dimmable_light_bulb.hpp>
 
 template <>
-void draw(const light_bulb_t &light, std::ostream &out, size_t /*position*/) {
-  light.draw(out);
+void draw(const light_bulb_t &light, std::ostream &out, size_t position) {
+  light.draw(out, position);
 }
 
 template <>
-void draw(const color_dimmable_light_bulb_t &light, std::ostream &out, size_t /*position*/) {
-  light.draw(out);
+void draw(const color_dimmable_light_bulb_t &light, std::ostream &out, size_t position) {
+  light.draw(out, position);
 }
 
 template <>
-void draw(const dimmable_light_bulb_t &light, std::ostream &out, size_t /*position*/) {
-  light.draw(out);
+void draw(const dimmable_light_bulb_t &light, std::ostream &out, size_t position) {
+  light.draw(out, position);
 }
 
 // template <>
@@ -37,13 +37,13 @@ TEST(runtime_polymorphism, draw) {
     std::ostringstream oss;
     draw(c, oss, 0);
     ASSERT_EQ(R"(<document>
-<light_bulb_t>false</light_bulb_t>
-<dimmable_light_bulb_t/>
-<color_dimmable_light_bulb_t/>
+  <light_bulb_t>false</light_bulb_t>
+  <dimmable_light_bulb_t/>
+  <color_dimmable_light_bulb_t/>
   <document>
-<light_bulb_t>false</light_bulb_t>
-<dimmable_light_bulb_t/>
-<color_dimmable_light_bulb_t/>
+    <light_bulb_t>false</light_bulb_t>
+    <dimmable_light_bulb_t/>
+    <color_dimmable_light_bulb_t/>
   </document>
 </document>
 )", oss.str());

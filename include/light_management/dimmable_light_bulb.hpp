@@ -4,8 +4,8 @@
 
 struct dimmable_light_bulb_t final
 {
-    void draw(std::ostream &oss) const
+    void draw(std::ostream &oss, size_t position = 0) const
     {
-        oss << "<dimmable_light_bulb_t/>\n";
+        oss << std::string(position, ' ') << "<dimmable_light_bulb_t/>\n";
     }
 };
