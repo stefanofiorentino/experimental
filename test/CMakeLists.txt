@@ -10,19 +10,6 @@ find_package(Threads REQUIRED)
 
 if (FETCH_3RD_PARTY_REPOS)
     FetchContent_Declare(
-        entt
-        GIT_REPOSITORY https://github.com/skypjack/entt.git
-        GIT_TAG master
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(entt)
-
-    if(NOT entt_POPULATED)
-        FetchContent_Populate(entt)
-    endif()
-
-    FetchContent_Declare(
         googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG main
@@ -35,36 +22,7 @@ if (FETCH_3RD_PARTY_REPOS)
         FetchContent_Populate(googletest)
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     endif()
-
-    FetchContent_Declare(
-        libuv
-        GIT_REPOSITORY https://github.com/libuv/libuv.git
-        GIT_TAG master
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(libuv)
-
-    if(NOT libuv_POPULATED)
-        FetchContent_Populate(libuv)
-        add_subdirectory(${libuv_SOURCE_DIR} ${libuv_BINARY_DIR})
-    endif()
-
-    FetchContent_Declare(
-        stlab
-        GIT_REPOSITORY https://github.com/stlab/libraries.git
-        GIT_TAG main
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(stlab)
-
-    if(NOT stlab_POPULATED)
-        FetchContent_Populate(stlab)
-    endif()
 else(FETCH_3RD_PARTY_REPOS)
-    set(entt_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/entt-src")
-    set(stlab_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/stlab-src")
     set(googletest_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/googletest-src")
     set(googletest_BINARY_DIR "${CMAKE_BUILD_DIR}/_deps/googletest-build")
 endif(FETCH_3RD_PARTY_REPOS)
@@ -97,15 +55,12 @@ function(ADD_UNIT_TEST TEST_NAME TEST_SOURCE)
             Threads::Threads
             ${LIBRT}
             ${WINSOCK2}
-            uv_a
     )
     target_include_directories(
         ${TEST_NAME}
             PRIVATE
         "${CMAKE_SOURCE_DIR}/include"
         "${googletest_SOURCE_DIR}/googlemock/include"
-        "${entt_SOURCE_DIR}/src"
-        "${stlab_SOURCE_DIR}"
     )
     add_test(NAME gtest_${TEST_NAME} COMMAND $<TARGET_FILE:${TEST_NAME}>)
 
@@ -129,16 +84,5 @@ endfunction()
 
 option(BUILD_GOOGLE_BASED_TESTS "Enable building googletest-based unit tests." ON)
 if (${BUILD_GOOGLE_BASED_TESTS})
-    ADD_UNIT_TEST(brown_bag_tdd_demo brown_bag_tdd_demo.cpp)
-    ADD_UNIT_TEST(brown_bag_mocking_strategies brown_bag_mocking_strategies.cpp)
-    ADD_UNIT_TEST(integral_type integral_type.cpp)
-    ADD_UNIT_TEST(stlab_serial_queue stlab_serial_queue.cpp)
-    ADD_UNIT_TEST(elvis elvis.cpp)
-    ADD_UNIT_TEST(signals signals.cpp)
-    if(NOT USE_UBSAN AND NOT USE_ASAN)
-        ADD_UNIT_TEST(pure_virtual_call pure_virtual_call.cpp)
-    endif(NOT USE_UBSAN AND NOT USE_ASAN)
-    ADD_UNIT_TEST(callback_check callback_check.cpp)
+    ADD_UNIT_TEST(tdd_demo_start tdd_demo_start.cpp)
 endif (${BUILD_GOOGLE_BASED_TESTS})
-
-add_subdirectory(collezioni_polimorfiche_e_dove_trovarle)
