@@ -129,6 +129,7 @@ endfunction()
 
 option(BUILD_GOOGLE_BASED_TESTS "Enable building googletest-based unit tests." ON)
 if (${BUILD_GOOGLE_BASED_TESTS})
+    ADD_UNIT_TEST(mocking_workshop mocking_workshop.cpp)
     ADD_UNIT_TEST(brown_bag_tdd_demo brown_bag_tdd_demo.cpp)
     ADD_UNIT_TEST(brown_bag_mocking_strategies brown_bag_mocking_strategies.cpp)
     ADD_UNIT_TEST(integral_type integral_type.cpp)
