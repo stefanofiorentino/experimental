@@ -10,7 +10,8 @@ template <typename T> inline void draw(const T &x, std::ostream &out, size_t pos
 
 class object_t {
 public:
-  explicit object_t(int x) : self_(std::make_unique<model_t>(std::move(x))) {}
+  template <typename T>
+  explicit object_t(T x) : self_(std::make_unique<model_t<T>>(std::move(x))) {}
 
   object_t(object_t const &x) = delete;
   object_t &operator=(object_t const &x) = delete;
@@ -23,14 +24,19 @@ public:
   }
 
 private:
-  struct model_t {
-    model_t(int x) : data_(std::move(x)) {}
-    void draw(std::ostream &out, size_t position) const {
+  struct concept_t {
+    ~concept_t() = default;
+    virtual void draw(std::ostream &out, size_t position) const = 0;
+  };
+  template <typename T> struct model_t final : concept_t {
+
+    model_t(T x) : data_(std::move(x)) {}
+    void draw(std::ostream &out, size_t position) const override {
       ::draw(data_, out, position);
     }
-    int data_;
+    T data_;
   };
-  std::unique_ptr<model_t> self_;
+  std::unique_ptr<concept_t> self_;
 };
 
 using collection_t = std::vector<object_t>;
