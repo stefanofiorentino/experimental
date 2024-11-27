@@ -9,10 +9,10 @@ struct light_bulb_t final
     : m_status{ false }
   {
   }
-  void draw(std::ostream& oss) const
+  void draw(std::ostream& oss, size_t position) const
   {
-    oss << "<light_bulb_t>" << std::boolalpha << m_status
-        << "</light_bulb_t>\n";
+    oss << std::string(position, ' ') << "<light_bulb_t>" << std::boolalpha
+        << m_status << "</light_bulb_t>\n";
   }
   void do_switch(bool status) { m_status = status; }
 
@@ -22,9 +22,9 @@ private:
 
 template<>
 inline void
-draw(const light_bulb_t& light, std::ostream& out, size_t /*position*/)
+draw(const light_bulb_t& light, std::ostream& out, size_t position)
 {
-  light.draw(out);
+  light.draw(out, position);
 }
 
 template<>

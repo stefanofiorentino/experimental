@@ -16,8 +16,12 @@ TEST(runtime_polymorphism, draw_plain_plant)
 
   std::ostringstream oss;
   draw(c, oss, 0);
-  ASSERT_EQ("<light_bulb_t>false</light_bulb_t>\n<dimmable_light_bulb_t/"
-            ">\n<color_dimmable_light_bulb_t/>\n",
+  ASSERT_EQ(R"(<document>
+  <light_bulb_t>false</light_bulb_t>
+  <dimmable_light_bulb_t/>
+  <color_dimmable_light_bulb_t/>
+</document>
+)",
             oss.str());
 }
 
@@ -33,9 +37,15 @@ TEST(runtime_polymorphism, draw_nested_plant)
 
   std::ostringstream oss;
   draw(c, oss, 0);
-  ASSERT_EQ("<light_bulb_t>false</light_bulb_t>\n<dimmable_light_bulb_t/"
-            ">\n<color_dimmable_light_bulb_t/>\n<room_t>\n<light_bulb_t>false</"
-            "light_bulb_t>\n</room_t>\n",
+  ASSERT_EQ(R"(<document>
+  <light_bulb_t>false</light_bulb_t>
+  <dimmable_light_bulb_t/>
+  <color_dimmable_light_bulb_t/>
+  <room_t>
+    <light_bulb_t>false</light_bulb_t>
+  </room_t>
+</document>
+)",
             oss.str());
 }
 
@@ -49,7 +59,11 @@ TEST(runtime_polymorphism, do_switch)
   std::ostringstream oss;
   do_switch(c, true);
   draw(c, oss, 0);
-  ASSERT_EQ("<light_bulb_t>true</light_bulb_t>\n<dimmable_light_bulb_t/"
-            ">\n<color_dimmable_light_bulb_t/>\n",
+  ASSERT_EQ(R"(<document>
+  <light_bulb_t>true</light_bulb_t>
+  <dimmable_light_bulb_t/>
+  <color_dimmable_light_bulb_t/>
+</document>
+)",
             oss.str());
 }

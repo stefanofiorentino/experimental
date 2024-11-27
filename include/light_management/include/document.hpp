@@ -58,6 +58,9 @@ private:
       if constexpr (has_void_draw_v<T>) {
         ::draw(data_, out, position);
       }
+      else{
+        throw;
+      }
     }
     void do_switch(bool status) override
     {
@@ -84,8 +87,17 @@ template<>
 inline void
 draw(const collection_t& x, std::ostream& out, size_t position)
 {
-  for (const auto& e : x)
+  if (x.empty() && position == 0) {
+    out << "<document/>\n";
+    return;
+  }
+  if (position == 0) 
+    out << "<document>\n";
+  for (const auto& e : x) {
     draw(e, out, position + 2);
+  }
+  if (position == 0) 
+    out << "</document>\n";
 }
 
 template<typename T>
