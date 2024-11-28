@@ -35,7 +35,7 @@ struct has_void_draw_impl : std::false_type
 };
 
 template<typename T>
-struct has_void_draw_impl<T, decltype(std::declval<T>().draw(std::cout))>
+struct has_void_draw_impl<T, decltype(std::declval<T>().draw(std::cout, 0u))>
   : std::true_type
 {
 };

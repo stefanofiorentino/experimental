@@ -23,7 +23,7 @@ draw(variant_collection_t& collection, std::ostream& os)
       std::visit(
         [&os](auto&& light) {
           if constexpr (has_void_draw_v<decltype(light)>) {
-            light.draw(os);
+            light.draw(os, 2);
           }
         },
         std::move(light_));
@@ -54,10 +54,13 @@ TEST(std_variant, draw)
 
   std::ostringstream oss;
   draw(c, oss);
-  ASSERT_EQ(
-    "<document>\n<light_bulb_t>false</light_bulb_t>\n<dimmable_light_bulb_t/"
-    ">\n<color_dimmable_light_bulb_t/>\n</document>\n",
-    oss.str());
+  ASSERT_EQ(R"(<document>
+  <light_bulb_t>false</light_bulb_t>
+  <dimmable_light_bulb_t/>
+  <color_dimmable_light_bulb_t/>
+</document>
+)",
+            oss.str());
 }
 
 TEST(std_variant, do_switch)
@@ -70,8 +73,11 @@ TEST(std_variant, do_switch)
   std::ostringstream oss;
   do_switch(c, true);
   draw(c, oss);
-  ASSERT_EQ(
-    "<document>\n<light_bulb_t>true</light_bulb_t>\n<dimmable_light_bulb_t/"
-    ">\n<color_dimmable_light_bulb_t/>\n</document>\n",
-    oss.str());
+  ASSERT_EQ(R"(<document>
+  <light_bulb_t>true</light_bulb_t>
+  <dimmable_light_bulb_t/>
+  <color_dimmable_light_bulb_t/>
+</document>
+)",
+            oss.str());
 }
