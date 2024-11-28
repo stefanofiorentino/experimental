@@ -9,16 +9,20 @@
 template<typename T>
 concept has_void_draw_v = requires(T v)
 {
-  { v.draw(std::cout, 0u) } -> std::convertible_to<void>;
+  {
+    v.draw(std::cout, 0u)
+    } -> std::convertible_to<void>;
 };
 
 namespace {
-  struct non_valid{};
-  static_assert(!has_void_draw_v<non_valid>);
-  struct valid{
-    void draw(std::ostream&, size_t) const {}
-  };
-  static_assert(has_void_draw_v<valid>);
+struct non_valid
+{};
+static_assert(!has_void_draw_v<non_valid>);
+struct valid
+{
+  void draw(std::ostream&, size_t) const {}
+};
+static_assert(has_void_draw_v<valid>);
 }
 
 #else

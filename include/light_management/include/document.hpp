@@ -58,9 +58,6 @@ private:
       if constexpr (has_void_draw_v<T>) {
         ::draw(data_, out, position);
       }
-      else{
-        throw;
-      }
     }
     void do_switch(bool status) override
     {
@@ -91,12 +88,12 @@ draw(const collection_t& x, std::ostream& out, size_t position)
     out << "<document/>\n";
     return;
   }
-  if (position == 0) 
+  if (position == 0)
     out << "<document>\n";
   for (const auto& e : x) {
     draw(e, out, position + 2);
   }
-  if (position == 0) 
+  if (position == 0)
     out << "</document>\n";
 }
 
