@@ -21,12 +21,12 @@ draw(variant_collection_t& collection, std::ostream& os)
   std::for_each(
     collection.begin(), collection.end(), [&os](auto const& light_) {
       std::visit(
-        [&os](auto&& light) {
+        [&os](auto const& light) {
           if constexpr (has_void_draw_v<decltype(light)>) {
             light.draw(os, 2);
           }
         },
-        std::move(light_));
+        light_);
     });
   os << "</document>\n";
 }
@@ -34,9 +34,9 @@ draw(variant_collection_t& collection, std::ostream& os)
 void
 do_switch(variant_collection_t& collection, bool status)
 {
-  std::for_each(collection.begin(), collection.end(), [status](auto&& light_) {
+  std::for_each(collection.begin(), collection.end(), [status](auto& light_) {
     std::visit(
-      [status](auto&& light) {
+      [status](auto& light) {
         if constexpr (has_void_do_switch_v<decltype(light)>) {
           light.do_switch(status);
         }
