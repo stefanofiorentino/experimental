@@ -247,6 +247,7 @@ if (${BUILD_GOOGLE_BASED_TESTS})
     ADD_UNIT_TEST_CPP20(placement_new placement_new.cpp)
     
     ADD_UNIT_TEST_CPP20(sdk_impl sdk_impl.cpp)
+    ADD_UNIT_TEST_CPP20(mockNonVirtualMethod mockNonVirtualMethod.cpp)
     target_link_libraries(sdk_impl PRIVATE sdk)
 
     ADD_UNIT_TEST_CPP20(out out.cpp)
