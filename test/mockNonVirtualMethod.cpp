@@ -1,37 +1,43 @@
 #include <gmock/gmock.h>
 
-class OriginalClass {
+class OriginalClass
+{
 public:
-    void nonVirtualMethod() {
-        // nothing to do, here
-    }
+  void nonVirtualMethod()
+  {
+    // nothing to do, here
+  }
 };
 
-class IWrapper {
+class IWrapper
+{
 public:
-    virtual ~IWrapper() = default;
-    virtual void nonVirtualMethod() = 0;
+  virtual ~IWrapper() = default;
+  virtual void nonVirtualMethod() = 0;
 };
 
 // In your tests, mock IWrapper instead of OriginalClass
-class MockWrapper : public IWrapper {
+class MockWrapper : public IWrapper
+{
 public:
-    MOCK_METHOD(void, nonVirtualMethod, (), (override));
+  MOCK_METHOD(void, nonVirtualMethod, (), (override));
 };
 
-void execute(IWrapper& w) {
+void
+execute(IWrapper& w)
+{
   w.nonVirtualMethod();
 }
 
 TEST(mockNonVirtualMethod, simple)
 {
-    // Arrange
-    MockWrapper wrapper;
-    EXPECT_CALL(wrapper, nonVirtualMethod());
+  // Arrange
+  MockWrapper wrapper;
+  EXPECT_CALL(wrapper, nonVirtualMethod());
 
-    // Act
-    execute(wrapper);
+  // Act
+  execute(wrapper);
 
-    // Assert
-    // googlemock internals will do the asserts for us.
+  // Assert
+  // googlemock internals will do the asserts for us.
 }

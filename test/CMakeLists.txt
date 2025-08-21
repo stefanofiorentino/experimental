@@ -49,6 +49,19 @@ if (FETCH_3RD_PARTY_REPOS)
         FetchContent_Populate(libuv)
     endif()
 
+    FetchContent_Declare(
+        libcoap
+        GIT_REPOSITORY https://github.com/obgm/libcoap.git
+        GIT_TAG main        # or a stable tag/version if you prefer
+        GIT_SHALLOW 1
+    )
+
+    FetchContent_GetProperties(libcoap)
+
+    if(NOT libcoap_POPULATED)
+        FetchContent_Populate(libcoap)
+    endif()
+
 else(FETCH_3RD_PARTY_REPOS)
     set(entt_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/entt-src")
     set(googletest_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/googletest-src")
@@ -61,11 +74,13 @@ else(FETCH_3RD_PARTY_REPOS)
     if(NOT EXISTS  ${libuv_SOURCE_DIR})
         message(FATAL_ERROR "Cannot find the 3rd party repo: ${libuv_SOURCE_DIR}")
     endif()
+    set(libcoap_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/libcoap-build")
 endif(FETCH_3RD_PARTY_REPOS)
 
 
 add_subdirectory(${libuv_SOURCE_DIR} ${libuv_BINARY_DIR} EXCLUDE_FROM_ALL)
 add_subdirectory("${googletest_SOURCE_DIR}" "${googletest_BINARY_DIR}" EXCLUDE_FROM_ALL)
+add_subdirectory(${libcoap_SOURCE_DIR} ${libcoap_BINARY_DIR})
 
 add_library(GTest::Main ALIAS gtest_main)
 add_library(GMock::Main ALIAS gmock_main)
@@ -104,6 +119,7 @@ function(ADD_UNIT_TEST_IMPL TEST_NAME TEST_SOURCE SHALL_FAIL CXX_STD)
         ${TEST_NAME}
             PUBLIC
         "${googletest_SOURCE_DIR}/googlemock/include"
+        "${libcoap_SOURCE_DIR}/include"
     )
 
     if(CI_MODE STREQUAL "COVERAGE")
@@ -248,6 +264,7 @@ if (${BUILD_GOOGLE_BASED_TESTS})
     
     ADD_UNIT_TEST_CPP20(sdk_impl sdk_impl.cpp)
     ADD_UNIT_TEST_CPP20(mockNonVirtualMethod mockNonVirtualMethod.cpp)
+    ADD_UNIT_TEST_CPP20(coap coap.cpp)
     target_link_libraries(sdk_impl PRIVATE sdk)
 
     ADD_UNIT_TEST_CPP20(out out.cpp)
