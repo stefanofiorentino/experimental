@@ -8,6 +8,7 @@
 	"mounts": [
 		"source=${localWorkspaceFolder}/build,target=/workspaces/experimental/build,type=bind,consistency=cached"
 	],
+	"runArgs": ["--user=502:502"],
 	"customizations": {
 		"vscode": {
 			"extensions": [
