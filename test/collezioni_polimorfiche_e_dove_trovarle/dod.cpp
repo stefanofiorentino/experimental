@@ -92,6 +92,8 @@ TEST(dod, simple_draw)
   auto on_off = on_off_t{ true };
   auto idx = world.add_on_off_light(on_off);
   ASSERT_EQ(0, idx);
+  ASSERT_EQ(1, world.on_offs.size());
+  ASSERT_EQ(1, world.on_off_lights.size());
 
   std::ostringstream oss;
   world.draw(oss);
@@ -113,8 +115,14 @@ TEST(dod, draw)
   auto level = level_t{ 42 };
   auto idx = world.add_on_off_light(on_off);
   ASSERT_EQ(0, idx);
+  ASSERT_EQ(1, world.on_offs.size());
+  ASSERT_EQ(1, world.on_off_lights.size());
+
   idx = world.add_dimmable_light(on_off, level);
   ASSERT_EQ(0, idx);
+  ASSERT_EQ(2, world.on_offs.size());
+  ASSERT_EQ(1, world.levels.size());
+  ASSERT_EQ(1, world.dimmable_lights.size());
 
   std::ostringstream oss;
   world.draw(oss);
