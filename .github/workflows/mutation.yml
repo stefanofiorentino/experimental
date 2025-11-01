@@ -1,4 +1,4 @@
-name: build
+name: mutation_build
 
 on: [push, pull_request]
 
