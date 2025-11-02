@@ -2,6 +2,13 @@
 
 TMP_NAME=$(mktemp -d)
 
+cleanup() {
+    # Shell quoting protects spaces or new‑lines in the path
+    rm -rf "$TMP_NAME"
+    cd ${OLDPWD}
+}
+trap cleanup EXIT INT TERM
+
 cd ${TMP_NAME} \
     && cmake \
         -DCMAKE_BUILD_TYPE:STRING=Debug \
@@ -18,5 +25,3 @@ cd ${TMP_NAME} \
         -j2 \
         --output-on-failure \
         2>&1
-
-cd ${OLDPWD} && rm -rf ${TMP_NAME}
