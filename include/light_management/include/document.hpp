@@ -84,8 +84,10 @@ template<>
 inline void
 draw(const collection_t& x, std::ostream& out, size_t position)
 {
+  out << "<document>\n";
   for (const auto& e : x)
     draw(e, out, position + 2);
+  out << "</document>\n";
 }
 
 template<typename T>

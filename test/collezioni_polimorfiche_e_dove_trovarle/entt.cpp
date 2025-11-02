@@ -6,38 +6,42 @@
 
 struct drawable_t
 {};
-struct color_t
-{};
 struct level_t
-{};
-struct status_t
 {
-  bool status;
+  int level;
+};
+struct on_off_t
+{
+  bool is_on;
 };
 
 void
 draw(entt::registry& registry, std::ostream& os)
 {
   os << "<document>\n";
-  const auto& light_bulb_view = registry.view<drawable_t, status_t>();
-  light_bulb_view.each([&light_bulb_view, &os](auto entity, auto&) {
-    status_t const& status_ = light_bulb_view.get<status_t>(entity);
-    os << "<light_bulb_t>";
-    os << std::boolalpha << status_.status;
-    os << "</light_bulb_t>\n";
-  });
-  os << "<dimmable_light_bulb_t/>\n<color_dimmable_light_bulb_t/>\n</"
-        "document>\n";
-}
-
-void
-do_switch(entt::registry& registry, bool status_to_apply)
-{
-  const auto& light_bulb_view = registry.view<drawable_t, status_t>();
-  light_bulb_view.each([&](auto entity, auto&) {
-    status_t& status_ = light_bulb_view.get<status_t>(entity);
-    status_.status = status_to_apply;
-  });
+  registry.view<drawable_t, on_off_t>(entt::exclude<level_t>)
+    .each([&os](auto, auto& on_off) {
+      os << "<on_off_light>\n";
+      os << "<is_on>\n";
+      os << std::boolalpha << on_off.is_on;
+      os << "\n";
+      os << "</is_on>\n";
+      os << "</on_off_light>\n";
+    });
+  registry.view<on_off_t, level_t>().each(
+    [&os](auto, auto& on_off, auto& level) {
+      os << "<dimmable_light>\n";
+      os << "<is_on>\n";
+      os << std::boolalpha << on_off.is_on;
+      os << "\n";
+      os << "</is_on>\n";
+      os << "<level>\n";
+      os << level.level;
+      os << "\n";
+      os << "</level>\n";
+      os << "</dimmable_light>\n";
+    });
+  os << "</document>\n";
 }
 
 TEST(entt, draw)
@@ -46,45 +50,30 @@ TEST(entt, draw)
 
   const auto light_bulb = registry.create();
   registry.emplace<drawable_t>(light_bulb);
-  registry.emplace<status_t>(light_bulb, false);
+  registry.emplace<on_off_t>(light_bulb, true);
 
   const auto dimmable_light_bulb = registry.create();
   registry.emplace<drawable_t>(dimmable_light_bulb);
-  registry.emplace<level_t>(dimmable_light_bulb);
-
-  const auto color_light_bulb = registry.create();
-  registry.emplace<drawable_t>(color_light_bulb);
-  registry.emplace<color_t>(color_light_bulb);
+  registry.emplace<on_off_t>(dimmable_light_bulb, true);
+  registry.emplace<level_t>(dimmable_light_bulb, 42);
 
   std::ostringstream oss;
   draw(registry, oss);
-  ASSERT_EQ(
-    "<document>\n<light_bulb_t>false</light_bulb_t>\n<dimmable_light_bulb_t/"
-    ">\n<color_dimmable_light_bulb_t/>\n</document>\n",
-    oss.str());
-}
-
-TEST(entt, do_switch)
-{
-  entt::registry registry;
-
-  const auto light_bulb = registry.create();
-  registry.emplace<drawable_t>(light_bulb);
-  registry.emplace<status_t>(light_bulb, false);
-
-  const auto dimmable_light_bulb = registry.create();
-  registry.emplace<drawable_t>(dimmable_light_bulb);
-  registry.emplace<level_t>(dimmable_light_bulb);
-
-  const auto color_light_bulb = registry.create();
-  registry.emplace<drawable_t>(color_light_bulb);
-  registry.emplace<color_t>(color_light_bulb);
-
-  std::ostringstream oss;
-  do_switch(registry, true);
-  draw(registry, oss);
-  ASSERT_EQ(
-    "<document>\n<light_bulb_t>true</light_bulb_t>\n<dimmable_light_bulb_t/"
-    ">\n<color_dimmable_light_bulb_t/>\n</document>\n",
-    oss.str());
+  ASSERT_EQ(R"(<document>
+<on_off_light>
+<is_on>
+true
+</is_on>
+</on_off_light>
+<dimmable_light>
+<is_on>
+true
+</is_on>
+<level>
+42
+</level>
+</dimmable_light>
+</document>
+)",
+            oss.str());
 }
