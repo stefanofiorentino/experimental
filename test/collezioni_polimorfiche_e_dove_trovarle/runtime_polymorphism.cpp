@@ -5,6 +5,8 @@
 #include <light_management/include/type_traits.hpp>
 #include <light_management/light_bulb.hpp>
 
+#include "const.hpp"
+
 TEST(runtime_polymorphism, draw_plain_plant)
 {
   collection_t c;
@@ -13,21 +15,5 @@ TEST(runtime_polymorphism, draw_plain_plant)
 
   std::ostringstream oss;
   draw(c, oss, 0);
-  ASSERT_EQ(R"(<document>
-<on_off_light>
-<is_on>
-true
-</is_on>
-</on_off_light>
-<dimmable_light>
-<is_on>
-true
-</is_on>
-<level>
-42
-</level>
-</dimmable_light>
-</document>
-)",
-            oss.str());
+  ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
 }

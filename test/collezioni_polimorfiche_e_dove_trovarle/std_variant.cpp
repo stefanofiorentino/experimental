@@ -9,6 +9,8 @@
 #include <light_management/include/type_traits.hpp>
 #include <light_management/light_bulb.hpp>
 
+#include "const.hpp"
+
 using light_concept_t = std::variant<on_off_light_t, dimmable_light_t>;
 using variant_collection_t = std::vector<light_concept_t>;
 
@@ -52,21 +54,5 @@ TEST(std_variant, do_switch)
   std::ostringstream oss;
   do_switch(c, true);
   draw(c, oss);
-  ASSERT_EQ(R"(<document>
-<on_off_light>
-<is_on>
-true
-</is_on>
-</on_off_light>
-<dimmable_light>
-<is_on>
-true
-</is_on>
-<level>
-42
-</level>
-</dimmable_light>
-</document>
-)",
-            oss.str());
+  ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
 }

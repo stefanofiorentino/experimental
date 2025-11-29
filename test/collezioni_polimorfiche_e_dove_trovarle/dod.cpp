@@ -5,6 +5,8 @@
 #include <iostream>
 #include <optional>
 
+#include "const.hpp"
+
 // https://youtu.be/SzjJfKHygaQ?si=8fP6lFRqNu1iJHNn&t=2533
 struct on_off_t
 {
@@ -97,15 +99,7 @@ TEST(dod, simple_draw)
 
   std::ostringstream oss;
   world.draw(oss);
-  ASSERT_EQ(R"(<document>
-<on_off_light>
-<is_on>
-true
-</is_on>
-</on_off_light>
-</document>
-)",
-            oss.str());
+  ASSERT_EQ(EXPECTED_STRING_SHORT, oss.str());
 }
 
 TEST(dod, draw)
@@ -126,21 +120,5 @@ TEST(dod, draw)
 
   std::ostringstream oss;
   world.draw(oss);
-  ASSERT_EQ(R"(<document>
-<on_off_light>
-<is_on>
-true
-</is_on>
-</on_off_light>
-<dimmable_light>
-<is_on>
-true
-</is_on>
-<level>
-42
-</level>
-</dimmable_light>
-</document>
-)",
-            oss.str());
+  ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
 }
