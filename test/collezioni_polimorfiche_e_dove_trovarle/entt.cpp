@@ -4,6 +4,8 @@
 
 #include <entt/entt.hpp>
 
+#include "const.hpp"
+
 struct drawable_t
 {};
 struct level_t
@@ -59,21 +61,5 @@ TEST(entt, draw)
 
   std::ostringstream oss;
   draw(registry, oss);
-  ASSERT_EQ(R"(<document>
-<on_off_light>
-<is_on>
-true
-</is_on>
-</on_off_light>
-<dimmable_light>
-<is_on>
-true
-</is_on>
-<level>
-42
-</level>
-</dimmable_light>
-</document>
-)",
-            oss.str());
+  ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
 }
