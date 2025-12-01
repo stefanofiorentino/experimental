@@ -50,6 +50,12 @@ struct ArenaAllocator
     return arena != rhs.arena;
   }
 
+  virtual ~ArenaAllocator()
+  {
+    static_assert(!std::is_same_v<void, T>,
+                  "T cannot be void to be ISO C++ code.");
+  }
+
 private:
   Arena* arena;
 };

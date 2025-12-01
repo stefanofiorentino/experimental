@@ -10,7 +10,7 @@
 #include "visitor_guide_allocators/statically_allocated_arena_allocator.h"
 
 using Arena1024 = Arena<1024>;
-using ArenaAllocator1024 = ArenaAllocator<void, Arena1024>;
+using ArenaAllocator1024 = ArenaAllocator<std::byte, Arena1024>;
 
 template<typename T>
 using SA1024 = std::scoped_allocator_adaptor<ArenaAllocator<T, Arena1024>>;
