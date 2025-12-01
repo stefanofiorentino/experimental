@@ -13,7 +13,7 @@
 using astring = std::basic_string<char, std::char_traits<char>, SA<char>>;
 
 astring
-make_astring(std::string const& rhs, ArenaAllocator<void>& arenaAllocator)
+make_astring(std::string const& rhs, ArenaAllocator<std::byte>& arenaAllocator)
 {
   return astring(rhs, arenaAllocator);
 }
@@ -21,7 +21,7 @@ make_astring(std::string const& rhs, ArenaAllocator<void>& arenaAllocator)
 TEST(visitor_guide_allocators_astring, whenStdStringIsUsedThenItWorks)
 {
   Arena arena(1024);
-  ArenaAllocator<void> arenaAllocator(&arena);
+  ArenaAllocator<std::byte> arenaAllocator(&arena);
   auto s2 =
     make_astring(experimental::constants::VERY_LONG_STRING, arenaAllocator);
   ASSERT_EQ(experimental::constants::VERY_LONG_STRING, s2.c_str());
@@ -30,7 +30,7 @@ TEST(visitor_guide_allocators_astring, whenStdStringIsUsedThenItWorks)
 TEST(visitor_guide_allocators_astring, whenCharPointerIsUsedThenItWorks)
 {
   Arena arena(1024);
-  ArenaAllocator<void> arenaAllocator(&arena);
+  ArenaAllocator<std::byte> arenaAllocator(&arena);
   auto s2 = make_astring(experimental::constants::VERY_LONG_STRING_C_STR,
                          arenaAllocator);
   ASSERT_EQ(experimental::constants::VERY_LONG_STRING, s2.c_str());
@@ -39,7 +39,7 @@ TEST(visitor_guide_allocators_astring, whenCharPointerIsUsedThenItWorks)
 TEST(visitor_guide_allocators_astring, whenExceedingSizeThenAnExceptionIsThrown)
 {
   Arena arena(100);
-  ArenaAllocator<void> arenaAllocator(&arena);
+  ArenaAllocator<std::byte> arenaAllocator(&arena);
   ASSERT_THROW(
     make_astring(experimental::constants::VERY_LONG_STRING_CAUSING_EXCEPTION,
                  arenaAllocator),
@@ -49,7 +49,7 @@ TEST(visitor_guide_allocators_astring, whenExceedingSizeThenAnExceptionIsThrown)
 TEST(visitor_guide_allocators_astring, whenDestroyThenSpaceIsFreed)
 {
   Arena arena(100);
-  ArenaAllocator<void> arenaAllocator(&arena);
+  ArenaAllocator<std::byte> arenaAllocator(&arena);
   auto s0 =
     make_astring(experimental::constants::VERY_LONG_STRING, arenaAllocator);
   ASSERT_EQ(0,
