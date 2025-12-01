@@ -3,7 +3,7 @@
 #include "include/document.hpp"
 #include <iostream>
 
-struct on_off_light_t final
+struct on_off_light_t final // cppcheck-suppress ctuOneDefinitionRuleViolation
 {
   on_off_light_t()
     : m_status{ true }

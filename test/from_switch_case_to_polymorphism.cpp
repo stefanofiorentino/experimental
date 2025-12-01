@@ -45,7 +45,7 @@ public:
   std::string print() const { return do_print(); }
   virtual ~base() = default;
 };
-class foo : public base
+class crtp_nvi_foo_t : public base
 {
   std::string do_print() const override { return details::print_foo(); }
 };
@@ -59,7 +59,7 @@ std::shared_ptr<base>
 factory(std::string const& action_to_perform)
 {
   if ("foo" == action_to_perform) {
-    return std::make_shared<foo>();
+    return std::make_shared<crtp_nvi_foo_t>();
   } else if ("bar" == action_to_perform) {
     return std::make_shared<bar>();
   }
