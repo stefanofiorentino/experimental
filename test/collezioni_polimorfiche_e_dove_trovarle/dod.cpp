@@ -20,17 +20,17 @@ struct on_off_t
   bool is_on;
 };
 
-struct level_t
+struct level_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 {
   size_t level;
 };
 
-struct on_off_light_t
+struct on_off_light_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 {
   size_t on_off_idx;
 };
 
-struct dimmable_light_t
+struct dimmable_light_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 {
   size_t on_off_idx;
   size_t level_idx;

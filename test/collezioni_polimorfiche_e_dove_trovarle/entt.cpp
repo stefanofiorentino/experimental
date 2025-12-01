@@ -6,13 +6,13 @@
 
 #include "const.hpp"
 
-struct drawable_t
+struct drawable_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 {};
-struct level_t
+struct level_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 {
   int level;
 };
-struct on_off_t
+struct on_off_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 {
   bool is_on;
 };

@@ -3,7 +3,7 @@
 #include "include/document.hpp"
 #include <iostream>
 
-struct dimmable_light_t final
+struct dimmable_light_t final // cppcheck-suppress ctuOneDefinitionRuleViolation
 {
   void draw(std::ostream& oss) const
   {

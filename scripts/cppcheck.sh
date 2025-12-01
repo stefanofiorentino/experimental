@@ -7,6 +7,7 @@ TMP_SUPPRESSIONS=/tmp/suppressions.txt
 cat > ${TMP_SUPPRESSIONS} <<EOF
 *:*folder-1-to-suppress*/*
 *:*folder-2-to-suppress*/*
+*:*build/_deps*/*
 EOF
  
 find . -type f \( -name "*.h" -o -name "*.hpp" \) \
