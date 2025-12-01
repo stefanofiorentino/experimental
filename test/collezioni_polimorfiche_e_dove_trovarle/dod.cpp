@@ -1,9 +1,16 @@
-#include <cstdint>
 #include <gmock/gmock.h>
 
+#include <cctype>
+#include <cstdint>
+
+#include <algorithm>
+#include <charconv>
 #include <ios>
 #include <iostream>
 #include <optional>
+#include <string_view>
+
+#include <pugixml.hpp>
 
 #include "const.hpp"
 
@@ -117,6 +124,98 @@ TEST(dod, draw)
   ASSERT_EQ(2, world.on_offs.size());
   ASSERT_EQ(1, world.levels.size());
   ASSERT_EQ(1, world.dimmable_lights.size());
+
+  std::ostringstream oss;
+  world.draw(oss);
+  ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
+}
+
+template<typename U>
+bool
+iequals(std::string const& a, U&& b)
+{
+  if (a.size() != b.size())
+    return false;
+  return std::equal(
+    a.begin(), a.end(), b.begin(), [](unsigned char x, unsigned char y) {
+      return std::tolower(x) == std::tolower(y);
+    });
+}
+
+bool
+parse_int(const std::string& s, size_t& value)
+{
+  auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value);
+  return ec == std::errc{} && ptr == s.data() + s.size();
+}
+
+std::string_view
+trim(std::string_view sv)
+{
+  auto not_space = [](unsigned char ch) { return !std::isspace(ch); };
+
+  auto begin = std::find_if(sv.begin(), sv.end(), not_space);
+  auto end = std::find_if(sv.rbegin(), sv.rend(), not_space).base();
+
+  if (begin >= end)
+    return {}; // all whitespace
+  return std::string_view{ begin, static_cast<std::size_t>(end - begin) };
+}
+
+TEST(dod, parsing)
+{
+  world_t world;
+
+  pugi::xml_document doc;
+  pugi::xml_parse_result result = doc.load_string(EXPECTED_STRING_FULL);
+  ASSERT_TRUE(result);
+
+  auto on_off_idx = 0u;
+  pugi::xml_node root = doc.child("document");
+  for (pugi::xml_node child : root.children()) {
+    if (child.name() == std::string("on_off_light")) {
+      auto on_off = on_off_t{ true };
+      for (pugi::xml_node on_off_light : child.children()) {
+        if (on_off_light.name() == std::string("is_on")) {
+          if (iequals("false", trim(on_off_light.child_value()))) {
+            on_off.is_on = false;
+          }
+        }
+      }
+      on_off_idx = world.add_on_off_light(on_off);
+    }
+  }
+  ASSERT_EQ(0u, on_off_idx);
+  ASSERT_EQ(1, world.on_offs.size());
+  ASSERT_EQ(1, world.on_off_lights.size());
+  ASSERT_EQ(0, world.dimmable_lights.size());
+  ASSERT_TRUE(world.on_offs[world.on_off_lights[on_off_idx].on_off_idx]->is_on);
+
+  auto dimmable_idx = 0u;
+  for (pugi::xml_node child : root.children()) {
+    if (child.name() == std::string("dimmable_light")) {
+      auto on_off = on_off_t{ true };
+      auto level = level_t{ 42 };
+      for (pugi::xml_node dimmable_light : child.children()) {
+        if (dimmable_light.name() == std::string("level")) {
+          parse_int(dimmable_light.child_value(), level.level);
+        }
+        if (dimmable_light.name() == std::string("is_on")) {
+          if (iequals("false", trim(dimmable_light.child_value()))) {
+            on_off.is_on = false;
+          }
+        }
+      }
+      dimmable_idx = world.add_dimmable_light(on_off, level);
+      break;
+    }
+  }
+  ASSERT_EQ(0, dimmable_idx);
+  ASSERT_EQ(2, world.on_offs.size());
+  ASSERT_EQ(1, world.levels.size());
+  ASSERT_EQ(1, world.dimmable_lights.size());
+  ASSERT_TRUE(
+    world.on_offs[world.dimmable_lights[dimmable_idx].on_off_idx]->is_on);
 
   std::ostringstream oss;
   world.draw(oss);

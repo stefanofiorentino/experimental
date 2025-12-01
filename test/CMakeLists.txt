@@ -18,6 +18,14 @@ if (FETCH_3RD_PARTY_REPOS)
 
     FetchContent_GetProperties(entt)
 
+    FetchContent_Declare(
+        pugixml
+        GIT_REPOSITORY https://github.com/zeux/pugixml.git
+        GIT_SHALLOW 1
+    )
+
+    FetchContent_MakeAvailable(pugixml)
+
     if(NOT entt_POPULATED)
         FetchContent_Populate(entt)
     endif()
@@ -107,12 +115,14 @@ function(ADD_UNIT_TEST_IMPL TEST_NAME TEST_SOURCE SHALL_FAIL CXX_STD)
             ${LIBRT}
             ${WINSOCK2}
             uv_a
+            pugixml
     )
     target_include_directories(
         ${TEST_NAME}
             PRIVATE
         "${CMAKE_SOURCE_DIR}/include"
         "${entt_SOURCE_DIR}/src"
+        "${pugixml_SOURCE_DIR}/src"
     )
 
     target_include_directories(
