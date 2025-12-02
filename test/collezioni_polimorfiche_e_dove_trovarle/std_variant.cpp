@@ -15,21 +15,21 @@ using light_concept_t = std::variant<on_off_light_t, dimmable_light_t>;
 using variant_collection_t = std::vector<light_concept_t>;
 
 void
-draw(variant_collection_t& collection, std::ostream& os)
+draw(variant_collection_t& collection, std::ostream& oss)
 {
-  os << "<?xml version=\"1.0\"?>\n";
-  os << "<document>\n";
+  oss << "<?xml version=\"1.0\"?>\n";
+  oss << "<document>\n";
   std::for_each(
-    collection.begin(), collection.end(), [&os](auto const& light_) {
+    collection.begin(), collection.end(), [&oss](auto const& light_) {
       std::visit(
-        [&os](auto&& light) {
+        [&oss](auto&& light) {
           if constexpr (has_void_draw_v<decltype(light)>) {
-            light.draw(os);
+            light.draw(oss);
           }
         },
         std::move(light_));
     });
-  os << "</document>\n";
+  oss << "</document>\n";
 }
 
 void
