@@ -24,7 +24,7 @@ jobs:
         echo "GITHUB_CPPCHECK_ERROR=$(cat cppcheck_error.txt)" >> $GITHUB_ENV
         echo "GITHUB_CPPCHECK_ERROR_COLOR=$(cat cppcheck_error_color.txt)" >> $GITHUB_ENV
     - name: Create Awesome Error Badge
-      uses: schneegans/dynamic-badges-action@v1.6.0
+      uses: schneegans/dynamic-badges-action@v1.7.0
       with:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 8bbff6da2e3c92e00414d698b4345248
