@@ -1,5 +1,6 @@
 namespace {
-constexpr auto EXPECTED_STRING_SHORT = R"(<document>
+constexpr auto EXPECTED_STRING_SHORT = R"(<?xml version="1.0"?>
+<document>
 <on_off_light>
 <is_on>
 true
@@ -7,7 +8,8 @@ true
 </on_off_light>
 </document>
 )";
-constexpr auto EXPECTED_STRING_FULL = R"(<document>
+constexpr auto EXPECTED_STRING_FULL = R"(<?xml version="1.0"?>
+<document>
 <on_off_light>
 <is_on>
 true

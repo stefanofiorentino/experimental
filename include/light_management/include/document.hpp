@@ -84,6 +84,7 @@ template<>
 inline void
 draw(const collection_t& x, std::ostream& out, size_t position)
 {
+  out << "<?xml version=\"1.0\"?>\n";
   out << "<document>\n";
   for (const auto& e : x)
     draw(e, out, position + 2);
