@@ -20,6 +20,7 @@ struct on_off_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 void
 draw(entt::registry& registry, std::ostream& os)
 {
+  os << "<?xml version=\"1.0\"?>\n";
   os << "<document>\n";
   registry.view<drawable_t, on_off_t>(entt::exclude<level_t>)
     .each([&os](auto, auto& on_off) {

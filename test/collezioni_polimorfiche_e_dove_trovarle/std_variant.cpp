@@ -17,6 +17,7 @@ using variant_collection_t = std::vector<light_concept_t>;
 void
 draw(variant_collection_t& collection, std::ostream& os)
 {
+  os << "<?xml version=\"1.0\"?>\n";
   os << "<document>\n";
   std::for_each(
     collection.begin(), collection.end(), [&os](auto const& light_) {

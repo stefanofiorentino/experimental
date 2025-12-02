@@ -80,6 +80,7 @@ struct world_t
   }
   void draw(std::ostream& oss) const
   {
+    oss << "<?xml version=\"1.0\"?>\n";
     oss << "<document>\n";
     for (const auto& on_off_light : on_off_lights)
       oss << "<on_off_light>\n<is_on>\n"
@@ -219,5 +220,56 @@ TEST(dod, parsing)
 
   std::ostringstream oss;
   world.draw(oss);
+  ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
+}
+
+TEST(dod, stringify)
+{
+  world_t world;
+  auto on_off = on_off_t{ true };
+  auto level = level_t{ 42 };
+  auto idx = world.add_on_off_light(on_off);
+  ASSERT_EQ(0, idx);
+  ASSERT_EQ(1, world.on_offs.size());
+  ASSERT_EQ(1, world.on_off_lights.size());
+
+  idx = world.add_dimmable_light(on_off, level);
+  ASSERT_EQ(0, idx);
+  ASSERT_EQ(2, world.on_offs.size());
+  ASSERT_EQ(1, world.levels.size());
+  ASSERT_EQ(1, world.dimmable_lights.size());
+
+  std::ostringstream oss;
+  pugi::xml_document doc;
+  doc.set_name("document");
+  auto document = doc.append_child();
+  document.set_name("document");
+  for (auto&& on_off_light : world.on_off_lights) {
+    auto xml_on_off_light = document.append_child();
+    xml_on_off_light.set_name("on_off_light");
+    auto xml_on_off = xml_on_off_light.append_child();
+    xml_on_off.set_name("is_on");
+    auto xml_is_on = xml_on_off.append_child(pugi::xml_node_type::node_pcdata);
+    xml_is_on.set_value(
+      world.on_offs[on_off_light.on_off_idx]->is_on ? "\ntrue\n" : "\nfalse\n");
+  }
+  for (auto&& dimmable_light : world.dimmable_lights) {
+    auto xml_dimmable_light = document.append_child();
+    xml_dimmable_light.set_name("dimmable_light");
+    auto xml_on_off = xml_dimmable_light.append_child();
+    xml_on_off.set_name("is_on");
+    auto xml_is_on = xml_on_off.append_child(pugi::xml_node_type::node_pcdata);
+    xml_is_on.set_value(world.on_offs[dimmable_light.on_off_idx]->is_on
+                          ? "\ntrue\n"
+                          : "\nfalse\n");
+    auto xml_level = xml_dimmable_light.append_child();
+    xml_level.set_name("level");
+    auto xml_level_level =
+      xml_level.append_child(pugi::xml_node_type::node_pcdata);
+    xml_level_level.set_value(
+      "\n" + std::to_string(world.levels[dimmable_light.level_idx]->level) +
+      "\n");
+  }
+  doc.save(oss, "");
   ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
 }
