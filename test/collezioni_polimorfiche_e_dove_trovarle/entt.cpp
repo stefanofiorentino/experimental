@@ -18,33 +18,33 @@ struct on_off_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 };
 
 void
-draw(entt::registry& registry, std::ostream& os)
+draw(entt::registry& registry, std::ostream& oss)
 {
-  os << "<?xml version=\"1.0\"?>\n";
-  os << "<document>\n";
+  oss << "<?xml version=\"1.0\"?>\n";
+  oss << "<document>\n";
   registry.view<drawable_t, on_off_t>(entt::exclude<level_t>)
-    .each([&os](auto, auto& on_off) {
-      os << "<on_off_light>\n";
-      os << "<is_on>\n";
-      os << std::boolalpha << on_off.is_on;
-      os << "\n";
-      os << "</is_on>\n";
-      os << "</on_off_light>\n";
+    .each([&oss](auto, auto& on_off) {
+      oss << "<on_off_light>\n";
+      oss << "<is_on>\n";
+      oss << std::boolalpha << on_off.is_on;
+      oss << "\n";
+      oss << "</is_on>\n";
+      oss << "</on_off_light>\n";
     });
   registry.view<on_off_t, level_t>().each(
-    [&os](auto, auto& on_off, auto& level) {
-      os << "<dimmable_light>\n";
-      os << "<is_on>\n";
-      os << std::boolalpha << on_off.is_on;
-      os << "\n";
-      os << "</is_on>\n";
-      os << "<level>\n";
-      os << level.level;
-      os << "\n";
-      os << "</level>\n";
-      os << "</dimmable_light>\n";
+    [&oss](auto, auto& on_off, auto& level) {
+      oss << "<dimmable_light>\n";
+      oss << "<is_on>\n";
+      oss << std::boolalpha << on_off.is_on;
+      oss << "\n";
+      oss << "</is_on>\n";
+      oss << "<level>\n";
+      oss << level.level;
+      oss << "\n";
+      oss << "</level>\n";
+      oss << "</dimmable_light>\n";
     });
-  os << "</document>\n";
+  oss << "</document>\n";
 }
 
 TEST(entt, draw)
