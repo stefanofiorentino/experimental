@@ -72,23 +72,42 @@ if (FETCH_3RD_PARTY_REPOS)
 
 else(FETCH_3RD_PARTY_REPOS)
     set(entt_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/entt-src")
+    if(NOT EXISTS  ${entt_SOURCE_DIR})
+        message(FATAL_ERROR "Cannot find the 3rd party repo: ${entt_SOURCE_DIR}")
+    endif()
+
     set(googletest_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/googletest-src")
-    set(googletest_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/googletest-build")
     if(NOT EXISTS  ${googletest_SOURCE_DIR})
         message(FATAL_ERROR "Cannot find the 3rd party repo: ${googletest_SOURCE_DIR}")
     endif()
+    set(googletest_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/googletest-build")
+
+
     set(libuv_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/libuv-src")
-    set(libuv_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/libuv-build")
     if(NOT EXISTS  ${libuv_SOURCE_DIR})
         message(FATAL_ERROR "Cannot find the 3rd party repo: ${libuv_SOURCE_DIR}")
     endif()
+    set(libuv_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/libuv-build")
+
+
+    set(libcoap_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/libcoap-src")
+    if(NOT EXISTS  ${libcoap_SOURCE_DIR})
+        message(FATAL_ERROR "Cannot find the 3rd party repo: ${libcoap_SOURCE_DIR}")
+    endif()
     set(libcoap_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/libcoap-build")
+
+    set(pugixml_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/pugixml-src")
+    if(NOT EXISTS  ${pugixml_SOURCE_DIR})
+        message(FATAL_ERROR "Cannot find the 3rd party repo: ${pugixml_SOURCE_DIR}")
+    endif()
+    set(pugixml_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/pugixml-build")
 endif(FETCH_3RD_PARTY_REPOS)
 
 
 add_subdirectory(${libuv_SOURCE_DIR} ${libuv_BINARY_DIR} EXCLUDE_FROM_ALL)
 add_subdirectory("${googletest_SOURCE_DIR}" "${googletest_BINARY_DIR}" EXCLUDE_FROM_ALL)
 add_subdirectory(${libcoap_SOURCE_DIR} ${libcoap_BINARY_DIR})
+add_subdirectory("${pugixml_SOURCE_DIR}" "${pugixml_BINARY_DIR}" EXCLUDE_FROM_ALL)
 
 add_library(GTest::Main ALIAS gtest_main)
 add_library(GMock::Main ALIAS gmock_main)
