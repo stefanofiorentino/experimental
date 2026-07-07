@@ -6,3 +6,4 @@
 /cppcheck_reports
 /lcov*
 /coverage*
+.DS_Store
