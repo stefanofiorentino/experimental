@@ -70,6 +70,25 @@ if (FETCH_3RD_PARTY_REPOS)
         FetchContent_Populate(libcoap)
     endif()
 
+    FetchContent_Declare(
+        googlebenchmark
+        GIT_REPOSITORY https://github.com/google/benchmark.git
+        GIT_TAG v1.8.3
+        GIT_SHALLOW 1
+    )
+
+    FetchContent_GetProperties(googlebenchmark)
+
+    if(NOT googlebenchmark_POPULATED)
+        set(BENCHMARK_ENABLE_TESTING OFF)
+        set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+        set(BENCHMARK_ENABLE_INSTALL ON)
+        FetchContent_Populate(googlebenchmark)
+    endif()
+
+    # Use add_subdirectory (not MakeAvailable) so targets are visible in parent scope
+    add_subdirectory("${googlebenchmark_SOURCE_DIR}" "${googlebenchmark_BINARY_DIR}")
+
 else(FETCH_3RD_PARTY_REPOS)
     set(entt_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/entt-src")
     if(NOT EXISTS  ${entt_SOURCE_DIR})
@@ -101,13 +120,24 @@ else(FETCH_3RD_PARTY_REPOS)
         message(FATAL_ERROR "Cannot find the 3rd party repo: ${pugixml_SOURCE_DIR}")
     endif()
     set(pugixml_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/pugixml-build")
+
+    set(googlebenchmark_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/googlebenchmark-src")
+    if(NOT EXISTS  ${googlebenchmark_SOURCE_DIR})
+        message(FATAL_ERROR "Cannot find the 3rd party repo: ${googlebenchmark_SOURCE_DIR}")
+    endif()
+    set(googlebenchmark_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/googlebenchmark-build")
 endif(FETCH_3RD_PARTY_REPOS)
 
 
 add_subdirectory(${libuv_SOURCE_DIR} ${libuv_BINARY_DIR} EXCLUDE_FROM_ALL)
 add_subdirectory("${googletest_SOURCE_DIR}" "${googletest_BINARY_DIR}" EXCLUDE_FROM_ALL)
 add_subdirectory(${libcoap_SOURCE_DIR} ${libcoap_BINARY_DIR})
-add_subdirectory("${pugixml_SOURCE_DIR}" "${pugixml_BINARY_DIR}" EXCLUDE_FROM_ALL)
+if(NOT pugixml_POPULATED)
+    add_subdirectory("${pugixml_SOURCE_DIR}" "${pugixml_BINARY_DIR}" EXCLUDE_FROM_ALL)
+endif()
+if(NOT googlebenchmark_POPULATED)
+    add_subdirectory("${googlebenchmark_SOURCE_DIR}" "${googlebenchmark_BINARY_DIR}" EXCLUDE_FROM_ALL)
+endif()
 
 add_library(GTest::Main ALIAS gtest_main)
 add_library(GMock::Main ALIAS gmock_main)
@@ -116,6 +146,13 @@ target_compile_features(gtest PUBLIC cxx_std_17)
 target_compile_features(gtest_main PUBLIC cxx_std_17)
 target_compile_features(gmock PUBLIC cxx_std_17)
 target_compile_features(gmock_main PUBLIC cxx_std_17)
+
+if(TARGET benchmark)
+    target_compile_features(benchmark PUBLIC cxx_std_20)
+endif()
+if(TARGET benchmark_main)
+    target_compile_features(benchmark_main PUBLIC cxx_std_20)
+endif()
 
 if(WIN32)
     set(WINSOCK2 ws2_32)

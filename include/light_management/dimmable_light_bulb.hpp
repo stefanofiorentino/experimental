@@ -1,6 +1,7 @@
 #pragma once
 
 #include "include/document.hpp"
+#include "light_bulb.hpp"
 #include <iostream>
 
 struct dimmable_light_t final // cppcheck-suppress ctuOneDefinitionRuleViolation
