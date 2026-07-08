@@ -1,7 +1,6 @@
 #include <benchmark/benchmark.h>
 
 #include <cstddef>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <type_traits>

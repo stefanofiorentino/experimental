@@ -11,6 +11,7 @@
 
 static collection_t build_runtime(size_t count) {
   collection_t c;
+  c.reserve(2 * count);
   for (size_t i = 0; i < count; ++i) {
     c.emplace_back(on_off_light_t());
     c.emplace_back(dimmable_light_t());
