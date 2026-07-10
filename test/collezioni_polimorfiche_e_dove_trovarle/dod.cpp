@@ -12,6 +12,8 @@
 
 #include <pugixml.hpp>
 
+#include <light_management/include/string_utils.hpp>
+
 #include "const.hpp"
 
 // https://youtu.be/SzjJfKHygaQ?si=8fP6lFRqNu1iJHNn&t=2533
@@ -131,38 +133,6 @@ TEST(dod, draw)
   ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
 }
 
-template<typename U>
-bool
-iequals(std::string const& a, U&& b)
-{
-  if (a.size() != b.size())
-    return false;
-  return std::equal(
-    a.begin(), a.end(), b.begin(), [](unsigned char x, unsigned char y) {
-      return std::tolower(x) == std::tolower(y);
-    });
-}
-
-bool
-parse_int(const std::string& s, size_t& value)
-{
-  auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value);
-  return ec == std::errc{} && ptr == s.data() + s.size();
-}
-
-std::string_view
-trim(std::string_view sv)
-{
-  auto not_space = [](unsigned char ch) { return !std::isspace(ch); };
-
-  auto begin = std::find_if(sv.begin(), sv.end(), not_space);
-  auto end = std::find_if(sv.rbegin(), sv.rend(), not_space).base();
-
-  if (begin >= end)
-    return {}; // all whitespace
-  return std::string_view{ begin, static_cast<std::size_t>(end - begin) };
-}
-
 TEST(dod, parsing)
 {
   world_t world;
@@ -208,7 +178,6 @@ TEST(dod, parsing)
         }
       }
       dimmable_idx = world.add_dimmable_light(on_off, level);
-      break;
     }
   }
   ASSERT_EQ(0, dimmable_idx);

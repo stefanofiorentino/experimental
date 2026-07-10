@@ -6,6 +6,8 @@
 #include <entt/entt.hpp>
 #include <pugixml.hpp>
 
+#include <light_management/include/string_utils.hpp>
+
 #include "const.hpp"
 
 struct drawable_t // cppcheck-suppress ctuOneDefinitionRuleViolation
@@ -67,46 +69,6 @@ TEST(entt, draw)
   ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
 }
 
-
-template<typename U>
-bool
-iequals(std::string const& a, U&& b)
-{
-  if (a.size() != b.size())
-    return false;
-  return std::equal(
-    a.begin(), a.end(), b.begin(), [](unsigned char x, unsigned char y) {
-      return std::tolower(x) == std::tolower(y);
-    });
-}
-
-bool
-parse_int(const std::string& s, size_t& value)
-{
-  auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value);
-  return ec == std::errc{} && ptr == s.data() + s.size();
-}
-
-bool
-parse_int(const std::string& s, int& value)
-{
-  auto [ptr, ec] = std::from_chars(s.data(), s.data() + s.size(), value);
-  return ec == std::errc{} && ptr == s.data() + s.size();
-}
-
-std::string_view
-trim(std::string_view sv)
-{
-  auto not_space = [](unsigned char ch) { return !std::isspace(ch); };
-
-  auto begin = std::find_if(sv.begin(), sv.end(), not_space);
-  auto end = std::find_if(sv.rbegin(), sv.rend(), not_space).base();
-
-  if (begin >= end)
-    return {}; // all whitespace
-  return std::string_view{ begin, static_cast<std::size_t>(end - begin) };
-}
-
 TEST(entt, parsing)
 {
   entt::registry registry;
@@ -132,7 +94,7 @@ TEST(entt, parsing)
       }
     }
   }
-  ASSERT_EQ(1, registry.view<drawable_t>().size());
+  ASSERT_EQ(1, registry.view<drawable_t>()->size());
 
   for (pugi::xml_node child : root.children()) {
     if (child.name() == std::string("dimmable_light")) {
@@ -155,10 +117,11 @@ TEST(entt, parsing)
           }
         }
       }
-      break;
     }
   }
-  ASSERT_EQ(2, registry.view<drawable_t>().size());
+  ASSERT_EQ(2, registry.view<drawable_t>()->size());
+  ASSERT_EQ(2, registry.view<on_off_t>()->size());
+  ASSERT_EQ(1, registry.view<level_t>()->size());
 
   std::ostringstream oss;
   draw(registry, oss);
