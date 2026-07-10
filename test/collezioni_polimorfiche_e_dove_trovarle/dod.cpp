@@ -24,7 +24,7 @@ struct on_off_t
 
 struct level_t // cppcheck-suppress ctuOneDefinitionRuleViolation
 {
-  size_t level;
+  int level;
 };
 
 struct on_off_light_t // cppcheck-suppress ctuOneDefinitionRuleViolation
