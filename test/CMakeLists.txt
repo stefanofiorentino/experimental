@@ -136,7 +136,8 @@ function(ADD_UNIT_TEST_IMPL TEST_NAME TEST_SOURCE SHALL_FAIL CXX_STD)
             )
         endif()
     elseif(CI_MODE STREQUAL "UNINITIALIZED")
-        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+        OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             target_compile_options(
                 ${TEST_NAME}
                     PUBLIC
