@@ -47,5 +47,5 @@ jobs:
     - name: Compile tests
       working-directory: build
       run: |
-        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel -DFETCH_3RD_PARTY_REPOS=ON ..
+        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel -DFETCH_3RD_PARTY_REPOS=ON -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..
         make -j2

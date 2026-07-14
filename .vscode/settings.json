@@ -2,7 +2,8 @@
     "cmake.configureArgs": [
         "-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE",
         "-DFETCH_3RD_PARTY_REPOS:BOOL=TRUE",
-        "-DCI_MODE:STRING=UNINITIALIZED"
+        "-DCI_MODE:STRING=UNINITIALIZED",
+        "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
     ],
     "cmake.configureOnOpen": false,
     "cmake.configureOnEdit": false,
