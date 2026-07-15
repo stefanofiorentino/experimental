@@ -3,10 +3,10 @@
 #include <light_management/include/document.hpp> // https://www.youtube.com/watch?v=QGcVXgEVMJg
 #include <pugixml.hpp>
 
-#include <light_management/light_bulb.hpp>
 #include <light_management/dimmable_light_bulb.hpp>
-#include <light_management/include/type_traits.hpp>
 #include <light_management/include/string_utils.hpp>
+#include <light_management/include/type_traits.hpp>
+#include <light_management/light_bulb.hpp>
 
 #include "const.hpp"
 

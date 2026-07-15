@@ -86,8 +86,7 @@ TEST(entt, parsing)
         if (on_off_light.name() == std::string("is_on")) {
           if (iequals("false", trim(on_off_light.child_value()))) {
             registry.emplace<on_off_t>(light_bulb, false);
-          }
-          else {
+          } else {
             registry.emplace<on_off_t>(light_bulb, true);
           }
         }
@@ -111,8 +110,7 @@ TEST(entt, parsing)
         if (dimmable_light.name() == std::string("is_on")) {
           if (iequals("false", trim(dimmable_light.child_value()))) {
             registry.emplace<on_off_t>(dimmable_light_bulb, false);
-          }
-          else {
+          } else {
             registry.emplace<on_off_t>(dimmable_light_bulb, true);
           }
         }
@@ -127,4 +125,3 @@ TEST(entt, parsing)
   draw(registry, oss);
   ASSERT_EQ(EXPECTED_STRING_FULL, oss.str());
 }
-

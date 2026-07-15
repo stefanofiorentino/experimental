@@ -9,14 +9,23 @@
 // ============================================================================
 // Shared component structs
 // ============================================================================
-struct on_off_t { bool is_on{true}; };
-struct level_t { size_t level{42}; };
-struct drawable_t {};
+struct on_off_t
+{
+  bool is_on{ true };
+};
+struct level_t
+{
+  size_t level{ 42 };
+};
+struct drawable_t
+{};
 
 // ============================================================================
 // EnTT ECS
 // ============================================================================
-static entt::registry build_entt(size_t count) {
+static entt::registry
+build_entt(size_t count)
+{
   entt::registry reg;
   for (size_t i = 0; i < count; ++i) {
     auto a = reg.create();
@@ -25,26 +34,27 @@ static entt::registry build_entt(size_t count) {
     auto b = reg.create();
     reg.emplace<drawable_t>(b);
     reg.emplace<on_off_t>(b, true);
-    reg.emplace<level_t>(b, level_t{static_cast<size_t>(42)});
+    reg.emplace<level_t>(b, level_t{ static_cast<size_t>(42) });
   }
   return reg;
 }
 
-static std::string draw_entt(entt::registry& reg) {
+static std::string
+draw_entt(entt::registry& reg)
+{
   std::ostringstream oss;
   oss << "<?xml version=\"1.0\"?>\n";
   oss << "<document>\n";
-  reg.view<drawable_t, on_off_t>(entt::exclude<level_t>).each(
-      [&oss](auto, auto& on_off) {
-        oss << "<on_off_light>\n<is_on>\n" << std::boolalpha
-            << on_off.is_on << "\n</is_on>\n</on_off_light>\n";
-      });
-  reg.view<on_off_t, level_t>().each(
-      [&oss](auto, auto& on_off, auto& level) {
-        oss << "<dimmable_light>\n<is_on>\n" << std::boolalpha
-            << on_off.is_on << "\n</is_on>\n<level>\n" << level.level
-            << "\n</level>\n</dimmable_light>\n";
-      });
+  reg.view<drawable_t, on_off_t>(entt::exclude<level_t>)
+    .each([&oss](auto, auto& on_off) {
+      oss << "<on_off_light>\n<is_on>\n"
+          << std::boolalpha << on_off.is_on << "\n</is_on>\n</on_off_light>\n";
+    });
+  reg.view<on_off_t, level_t>().each([&oss](auto, auto& on_off, auto& level) {
+    oss << "<dimmable_light>\n<is_on>\n"
+        << std::boolalpha << on_off.is_on << "\n</is_on>\n<level>\n"
+        << level.level << "\n</level>\n</dimmable_light>\n";
+  });
   oss << "</document>\n";
   return oss.str();
 }
@@ -52,14 +62,18 @@ static std::string draw_entt(entt::registry& reg) {
 // ============================================================================
 // Benchmark parameterisation: 4 ops x 3 scales = 12 benchmarks
 // ============================================================================
-static void BM_Entt_Create(benchmark::State& state, size_t n) {
+static void
+BM_Entt_Create(benchmark::State& state, size_t n)
+{
   for (auto _ : state) {
     auto reg = build_entt(n);
     benchmark::DoNotOptimize(reg);
   }
 }
 
-static void BM_Entt_Draw(benchmark::State& state, size_t n) {
+static void
+BM_Entt_Draw(benchmark::State& state, size_t n)
+{
   auto reg = build_entt(n);
   for (auto _ : state) {
     std::string out = draw_entt(reg);
@@ -67,29 +81,25 @@ static void BM_Entt_Draw(benchmark::State& state, size_t n) {
   }
 }
 
-static void BM_Entt_Switch(benchmark::State& state, size_t n) {
+static void
+BM_Entt_Switch(benchmark::State& state, size_t n)
+{
   auto reg = build_entt(n);
   for (auto _ : state) {
-    reg.view<on_off_t>().each([](auto, auto& on_off) {
-      on_off.is_on = false;
-    });
-    reg.view<on_off_t>().each([](auto, auto& on_off) {
-      on_off.is_on = true;
-    });
+    reg.view<on_off_t>().each([](auto, auto& on_off) { on_off.is_on = false; });
+    reg.view<on_off_t>().each([](auto, auto& on_off) { on_off.is_on = true; });
     benchmark::ClobberMemory();
   }
 }
 
-static void BM_Entt_Mixed(benchmark::State& state, size_t n) {
+static void
+BM_Entt_Mixed(benchmark::State& state, size_t n)
+{
   for (auto _ : state) {
     auto reg = build_entt(n);
     std::string out = draw_entt(reg);
-    reg.view<on_off_t>().each([](auto, auto& on_off) {
-      on_off.is_on = false;
-    });
-    reg.view<on_off_t>().each([](auto, auto& on_off) {
-      on_off.is_on = true;
-    });
+    reg.view<on_off_t>().each([](auto, auto& on_off) { on_off.is_on = false; });
+    reg.view<on_off_t>().each([](auto, auto& on_off) { on_off.is_on = true; });
     benchmark::DoNotOptimize(out);
     benchmark::ClobberMemory();
   }

@@ -20,13 +20,9 @@ struct dimmable_light_t final // cppcheck-suppress ctuOneDefinitionRuleViolation
     oss << "</dimmable_light>\n";
   }
 
-  void do_switch(bool is_on) {
-    this->is_on = is_on;
-  }
+  void do_switch(bool is_on) { this->is_on = is_on; }
 
-  void do_dimm(int level) {
-    this->level = level;
-  }
+  void do_dimm(int level) { this->level = level; }
 
 private:
   bool is_on{ true };

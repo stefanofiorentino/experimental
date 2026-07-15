@@ -2,9 +2,9 @@
 
 #include <gmock/gmock.h>
 
+#include <iomanip>
 #include <new>
 #include <string>
-#include <iomanip>
 
 #include "visitor_guide_allocators/arena.h"
 #include "visitor_guide_allocators/arena_allocator.h"
@@ -53,7 +53,10 @@ TEST(visitor_guide_allocators_astring, whenDestroyThenSpaceIsFreed)
   ArenaAllocator<char> arenaAllocator(&arena);
   auto s0 =
     make_astring(experimental::constants::VERY_LONG_STRING, arenaAllocator);
-  ASSERT_EQ(0, memcmp(experimental::constants::VERY_LONG_STRING.c_str(), s0.c_str(), s0.length()));
+  ASSERT_EQ(0,
+            memcmp(experimental::constants::VERY_LONG_STRING.c_str(),
+                   s0.c_str(),
+                   s0.length()));
 
   auto s1 =
     make_astring(experimental::constants::VERY_LONG_STRING_1, arenaAllocator);

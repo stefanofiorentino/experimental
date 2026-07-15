@@ -8,8 +8,9 @@
 #include "light_management/include/document.hpp"
 #include "light_management/light_bulb.hpp"
 
-
-static collection_t build_runtime(size_t count) {
+static collection_t
+build_runtime(size_t count)
+{
   collection_t c;
   c.reserve(2 * count);
   for (size_t i = 0; i < count; ++i) {
@@ -19,7 +20,9 @@ static collection_t build_runtime(size_t count) {
   return c;
 }
 
-static std::string draw_runtime(const collection_t& c) {
+static std::string
+draw_runtime(const collection_t& c)
+{
   std::ostringstream oss;
   draw(c, oss, 0);
   return oss.str();
@@ -28,14 +31,18 @@ static std::string draw_runtime(const collection_t& c) {
 // ============================================================================
 // Benchmark parameterisation: 4 ops x 3 scales = 12 benchmarks
 // ============================================================================
-static void BM_Runtime_Create(benchmark::State& state, size_t n) {
+static void
+BM_Runtime_Create(benchmark::State& state, size_t n)
+{
   for (auto _ : state) {
     auto w = build_runtime(n);
     benchmark::DoNotOptimize(w);
   }
 }
 
-static void BM_Runtime_Draw(benchmark::State& state, size_t n) {
+static void
+BM_Runtime_Draw(benchmark::State& state, size_t n)
+{
   auto w = build_runtime(n);
   for (auto _ : state) {
     std::string out = draw_runtime(w);
@@ -43,7 +50,9 @@ static void BM_Runtime_Draw(benchmark::State& state, size_t n) {
   }
 }
 
-static void BM_Runtime_Switch(benchmark::State& state, size_t n) {
+static void
+BM_Runtime_Switch(benchmark::State& state, size_t n)
+{
   auto c = build_runtime(n);
   for (auto _ : state) {
     do_switch(c, false);
@@ -52,7 +61,9 @@ static void BM_Runtime_Switch(benchmark::State& state, size_t n) {
   }
 }
 
-static void BM_Runtime_Mixed(benchmark::State& state, size_t n) {
+static void
+BM_Runtime_Mixed(benchmark::State& state, size_t n)
+{
   for (auto _ : state) {
     auto c = build_runtime(n);
     std::string out = draw_runtime(c);
