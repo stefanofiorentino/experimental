@@ -63,7 +63,7 @@ TEST(visitor_guide_allocators_astring, whenDestroyThenSpaceIsFreed)
                    s1.length()));
 
   ASSERT_THROW(
-    make_astring(experimental::constants::VERY_LONG_STRING_2,
+    make_astring(experimental::constants::VERY_LONG_STRING_CAUSING_EXCEPTION,
                  arenaAllocator),
     std::bad_alloc);
 }
