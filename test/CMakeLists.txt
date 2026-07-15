@@ -2,146 +2,34 @@
 # test based on googletest
 #
 
-option(FETCH_3RD_PARTY_REPOS "Fetch 3rd repos" OFF)
 include(FetchContent)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-if (FETCH_3RD_PARTY_REPOS)
-    FetchContent_Declare(
-        entt
-        GIT_REPOSITORY https://github.com/skypjack/entt.git
-        GIT_TAG v3.16.0
-        GIT_SHALLOW 1
-    )
+FetchContent_Declare(
+    entt
+    GIT_REPOSITORY https://github.com/skypjack/entt.git
+    GIT_TAG v3.16.0
+    GIT_SHALLOW 1
+)
+FetchContent_MakeAvailable(entt)
 
-    FetchContent_GetProperties(entt)
+FetchContent_Declare(
+    pugixml
+    GIT_REPOSITORY https://github.com/zeux/pugixml.git
+    GIT_SHALLOW 1
+)
+FetchContent_MakeAvailable(pugixml)
 
-    FetchContent_Declare(
-        pugixml
-        GIT_REPOSITORY https://github.com/zeux/pugixml.git
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_MakeAvailable(pugixml)
-
-    if(NOT entt_POPULATED)
-        FetchContent_Populate(entt)
-    endif()
-
-    FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG main
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(googletest)
-
-    if(NOT googletest_POPULATED)
-        FetchContent_Populate(googletest)
-        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    endif()
-
-    FetchContent_Declare(
-        libuv
-        GIT_REPOSITORY https://github.com/libuv/libuv.git
-        GIT_TAG master
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(libuv)
-
-    if(NOT libuv_POPULATED)
-        FetchContent_Populate(libuv)
-    endif()
-
-    FetchContent_Declare(
-        libcoap
-        GIT_REPOSITORY https://github.com/obgm/libcoap.git
-        GIT_TAG main        # or a stable tag/version if you prefer
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(libcoap)
-
-    if(NOT libcoap_POPULATED)
-        FetchContent_Populate(libcoap)
-    endif()
-
-    FetchContent_Declare(
-        googlebenchmark
-        GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.8.3
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(googlebenchmark)
-
-    if(NOT googlebenchmark_POPULATED)
-        set(BENCHMARK_ENABLE_TESTING OFF)
-        set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
-        set(BENCHMARK_USE_BUNDLED_GTEST OFF)
-        set(BENCHMARK_ENABLE_INSTALL OFF)
-        set(BENCHMARK_INSTALL_DOCS OFF)
-        set(BENCHMARK_INSTALL_TOOLS OFF)
-        FetchContent_Populate(googlebenchmark)
-    endif()
-
-    # Use add_subdirectory (not MakeAvailable) so targets are visible in parent scope
-    add_subdirectory("${googlebenchmark_SOURCE_DIR}" "${googlebenchmark_BINARY_DIR}")
-
-else(FETCH_3RD_PARTY_REPOS)
-    set(entt_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/entt-src")
-    if(NOT EXISTS  ${entt_SOURCE_DIR})
-        message(FATAL_ERROR "Cannot find the 3rd party repo: ${entt_SOURCE_DIR}")
-    endif()
-
-    set(googletest_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/googletest-src")
-    if(NOT EXISTS  ${googletest_SOURCE_DIR})
-        message(FATAL_ERROR "Cannot find the 3rd party repo: ${googletest_SOURCE_DIR}")
-    endif()
-    set(googletest_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/googletest-build")
-
-
-    set(libuv_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/libuv-src")
-    if(NOT EXISTS  ${libuv_SOURCE_DIR})
-        message(FATAL_ERROR "Cannot find the 3rd party repo: ${libuv_SOURCE_DIR}")
-    endif()
-    set(libuv_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/libuv-build")
-
-
-    set(libcoap_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/libcoap-src")
-    if(NOT EXISTS  ${libcoap_SOURCE_DIR})
-        message(FATAL_ERROR "Cannot find the 3rd party repo: ${libcoap_SOURCE_DIR}")
-    endif()
-    set(libcoap_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/libcoap-build")
-
-    set(pugixml_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/pugixml-src")
-    if(NOT EXISTS  ${pugixml_SOURCE_DIR})
-        message(FATAL_ERROR "Cannot find the 3rd party repo: ${pugixml_SOURCE_DIR}")
-    endif()
-    set(pugixml_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/pugixml-build")
-
-    set(googlebenchmark_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/googlebenchmark-src")
-    if(NOT EXISTS  ${googlebenchmark_SOURCE_DIR})
-        message(FATAL_ERROR "Cannot find the 3rd party repo: ${googlebenchmark_SOURCE_DIR}")
-    endif()
-    set(googlebenchmark_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/googlebenchmark-build")
-endif(FETCH_3RD_PARTY_REPOS)
-
-
-add_subdirectory(${libuv_SOURCE_DIR} ${libuv_BINARY_DIR} EXCLUDE_FROM_ALL)
-add_subdirectory("${googletest_SOURCE_DIR}" "${googletest_BINARY_DIR}" EXCLUDE_FROM_ALL)
-add_subdirectory(${libcoap_SOURCE_DIR} ${libcoap_BINARY_DIR})
-if(NOT pugixml_POPULATED)
-    add_subdirectory("${pugixml_SOURCE_DIR}" "${pugixml_BINARY_DIR}" EXCLUDE_FROM_ALL)
-endif()
-if(NOT googlebenchmark_POPULATED)
-    add_subdirectory("${googlebenchmark_SOURCE_DIR}" "${googlebenchmark_BINARY_DIR}" EXCLUDE_FROM_ALL)
-endif()
-
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG main
+    GIT_SHALLOW 1
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 add_library(GTest::Main ALIAS gtest_main)
 add_library(GMock::Main ALIAS gmock_main)
 
@@ -150,16 +38,40 @@ target_compile_features(gtest_main PUBLIC cxx_std_17)
 target_compile_features(gmock PUBLIC cxx_std_17)
 target_compile_features(gmock_main PUBLIC cxx_std_17)
 
-if(TARGET benchmark)
-    target_compile_features(benchmark PUBLIC cxx_std_20)
-endif()
-if(TARGET benchmark_main)
-    target_compile_features(benchmark_main PUBLIC cxx_std_20)
-endif()
-
+FetchContent_Declare(
+    libuv
+    GIT_REPOSITORY https://github.com/libuv/libuv.git
+    GIT_TAG master
+    GIT_SHALLOW 1
+)
 if(WIN32)
     set(WINSOCK2 ws2_32)
 endif()
+FetchContent_MakeAvailable(libuv)
+
+FetchContent_Declare(
+    libcoap
+    GIT_REPOSITORY https://github.com/obgm/libcoap.git
+    GIT_TAG main        # or a stable tag/version if you prefer
+    GIT_SHALLOW 1
+)
+FetchContent_MakeAvailable(libcoap)
+
+FetchContent_Declare(
+    googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG v1.8.3
+    GIT_SHALLOW 1
+)
+set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+set(BENCHMARK_USE_BUNDLED_GTEST OFF)
+set(BENCHMARK_ENABLE_INSTALL OFF)
+set(BENCHMARK_INSTALL_DOCS OFF)
+set(BENCHMARK_INSTALL_TOOLS OFF)
+FetchContent_MakeAvailable(googlebenchmark)
+target_compile_features(benchmark PUBLIC cxx_std_20)
+target_compile_features(benchmark_main PUBLIC cxx_std_20)
 
 function(ADD_UNIT_TEST_IMPL TEST_NAME TEST_SOURCE SHALL_FAIL CXX_STD)
     add_executable(${TEST_NAME} "${TEST_SOURCE}")

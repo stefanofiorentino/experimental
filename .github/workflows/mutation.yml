@@ -29,7 +29,7 @@ jobs:
       env:
         CXX: ${{ matrix.compiler.exe }}
       run: |
-        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel -DFETCH_3RD_PARTY_REPOS:BOOL=TRUE ${{ matrix.mode }} ..
+        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel ${{ matrix.mode }} ..
         make -j2
     - name: Run tests
       working-directory: build
@@ -48,5 +48,5 @@ jobs:
     - name: Compile tests
       working-directory: build
       run: |
-        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel -DFETCH_3RD_PARTY_REPOS=ON ..
+        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel ..
         make -j2

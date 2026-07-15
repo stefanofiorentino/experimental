@@ -12,7 +12,6 @@ trap cleanup EXIT INT TERM
 cd ${TMP_NAME} \
     && cmake \
         -DCMAKE_BUILD_TYPE:STRING=Debug \
-        -DFETCH_3RD_PARTY_REPOS:BOOL=TRUE \
         -DCI_MODE="COVERAGE" \
         ${RETURN_FOLDER} \
     && make \
