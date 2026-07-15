@@ -51,7 +51,7 @@ static std::string draw_variant(variant_collection_t& c) {
     std::visit(
         [&oss](auto&& light) {
           if constexpr (has_void_draw_v<decltype(light)>) {
-            light.draw(oss);
+            light.draw(oss, 0);
           }
         },
         light_);

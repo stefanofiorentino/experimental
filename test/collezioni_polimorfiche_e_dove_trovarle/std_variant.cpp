@@ -24,7 +24,7 @@ draw(variant_collection_t& collection, std::ostream& oss)
       std::visit(
         [&oss](auto&& light) {
           if constexpr (has_void_draw_v<decltype(light)>) {
-            light.draw(oss);
+            light.draw(oss, 0);
           }
         },
         light_);
