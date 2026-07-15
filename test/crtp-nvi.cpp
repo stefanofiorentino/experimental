@@ -2,7 +2,7 @@
 #include <sstream>
 
 template<typename T>
-class wrap
+class wrap_t
 {
   const std::string P_START_TAG{ "<p>" };
   const std::string P_END_TAG{ "</p>" };
@@ -23,9 +23,10 @@ public:
   }
 };
 
-class foo final : public wrap<foo>
+class crtp_nvi_foo_t final // cppcheck-suppress ctuOneDefinitionRuleViolation
+  : public wrap_t<crtp_nvi_foo_t>
 {
-  friend class wrap<foo>;
+  friend class wrap_t<crtp_nvi_foo_t>;
   void do_paragraph(std::ostringstream& oss,
                     std::istringstream const& iss) const override
   {
@@ -36,7 +37,7 @@ class foo final : public wrap<foo>
 TEST(crtp, nvi)
 {
   // Arrange
-  foo f;
+  crtp_nvi_foo_t f;
   std::istringstream iss("text");
   std::ostringstream oss;
 

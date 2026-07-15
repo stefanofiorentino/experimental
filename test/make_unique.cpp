@@ -6,5 +6,5 @@ TEST(make_unique, simple)
 {
   constexpr std::size_t N = 10;
   auto ptr = std::make_unique<const uint8_t[]>(N);
-  assert(sizeof(ptr) == sizeof(uint8_t*));
+  ASSERT_EQ(sizeof(ptr), sizeof(uint8_t*));
 }

@@ -8,11 +8,11 @@
 
 class counter_t
 {
-  int value{};
+  size_t value{};
 
 public:
   counter_t() = default;
-  explicit counter_t(int value_)
+  explicit counter_t(size_t value_)
     : value(value_)
   {
   }

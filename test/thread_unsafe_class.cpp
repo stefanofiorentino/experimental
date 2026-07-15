@@ -13,7 +13,7 @@ public:
   }
   bool getStatus() const { return status; }
 
-  void setStatus(bool status) { thread_unsafe::status = status; }
+  void setStatus(bool _status) { thread_unsafe::status = _status; }
 };
 
 TEST(thread_unsafe, basic)
@@ -39,10 +39,10 @@ TEST(thread_unsafe, thsan)
   ASSERT_FALSE(status);
 
   auto th1 =
-    reallyAsync([](thread_unsafe& ts) { ts.setStatus(true); }, std::ref(ts));
+    reallyAsync([](thread_unsafe& _ts) { _ts.setStatus(true); }, std::ref(ts));
 
   auto th2 = reallyAsync(
-    [](thread_unsafe const& ts, bool& status) { status = ts.getStatus(); },
+    [](thread_unsafe const& _ts, bool& _status) { _status = _ts.getStatus(); },
     std::cref(ts),
     std::ref(status));
 }

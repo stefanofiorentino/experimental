@@ -1,13 +1,19 @@
 #!/bin/bash
 
 TMP_NAME=$(mktemp -d)
+RETURN_FOLDER=${PWD}
+cleanup() {
+    cd ${RETURN_FOLDER}
+    # Shell quoting protects spaces or new‑lines in the path
+    rm -rf "$TMP_NAME"
+}
+trap cleanup EXIT INT TERM
 
 cd ${TMP_NAME} \
     && cmake \
         -DCMAKE_BUILD_TYPE:STRING=Debug \
-        -DFETCH_3RD_PARTY_REPOS:BOOL=TRUE \
         -DCI_MODE="COVERAGE" \
-        ${OLDPWD} \
+        ${RETURN_FOLDER} \
     && make \
         -j$(nproc) \
     && ctest \
@@ -18,5 +24,5 @@ cd ${TMP_NAME} \
         -j2 \
         --output-on-failure \
         2>&1
-
-cd ${OLDPWD} && rm -rf ${TMP_NAME}
+    
+cleanup

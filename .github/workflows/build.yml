@@ -12,7 +12,7 @@ jobs:
         compiler:
           - pkg: clang-12
             exe: clang++-12
-        mode: ["", "-DCI_MODE:STRING=ASAN", "-DCI_MODE:STRING=UBSAN", "-DCI_MODE:STRING=THSAN"]
+        mode: ["", "-DCI_MODE:STRING=ASAN", "-DCI_MODE:STRING=UBSAN", "-DCI_MODE:STRING=THSAN", "-DCI_MODE:STRING=BOUNDS", "-DCI_MODE:STRING=TYPE_SAFETY", "-DCI_MODE:STRING=UNINITIALIZED"]
 
     steps:
     - uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
       env:
         CXX: ${{ matrix.compiler.exe }}
       run: |
-        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel -DFETCH_3RD_PARTY_REPOS:BOOL=TRUE ${{ matrix.mode }} ..
+        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel ${{ matrix.mode }} ..
         make -j2
     - name: Run tests
       working-directory: build
@@ -47,5 +47,5 @@ jobs:
     - name: Compile tests
       working-directory: build
       run: |
-        cmake -DCMAKE_BUILD_TYPE:STRING=MinSizeRel -DFETCH_3RD_PARTY_REPOS=ON ..
+        cmake -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE:STRING=MinSizeRel ..
         make -j2

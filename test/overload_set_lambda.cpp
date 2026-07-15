@@ -1,4 +1,5 @@
-#include <cstdio>
+#include <gmock/gmock.h>
+#include <sstream>
 #include <utility>
 
 // https://gist.github.com/socantre/4164652
@@ -37,11 +38,12 @@ overload(Fs&&... xs)
   return overload_set<Fs...>(std::forward<Fs>(xs)...);
 }
 
-int
-main()
+TEST(overload_set_lambda, simple)
 {
-  auto o = overload([](int) { std::printf("Hello, "); },
-                    [](double) { std::printf("World!\n"); });
+  std::ostringstream probe;
+  auto o = overload([&probe](int) { probe << "Hello, "; },
+                    [&probe](double) { probe << "World!\n"; });
   o(1);
   o(1.);
+  ASSERT_EQ("Hello, World!\n", probe.str());
 }

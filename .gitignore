@@ -1,8 +1,9 @@
 /.vscode
-/build
-/3rd
-/.cache
-/cmake-build-debug
+/build*
+/3rd*
+/.cache*
+/cmake-build-*
 /cppcheck_reports
 /lcov*
-/coverage/
+/coverage*
+.DS_Store

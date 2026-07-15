@@ -13,7 +13,7 @@ struct my_stack_t
   }
   bool isEmpty() const noexcept { return size_ == 0; }
 
-  int getSize() const noexcept { return size_; }
+  unsigned int getSize() const noexcept { return size_; }
 
   int pop() noexcept
   {
@@ -26,7 +26,7 @@ struct my_stack_t
   void push(int v) noexcept { v_[size_++] = v; }
   static const size_t N = 100;
   std::array<int, N> v_;
-  int size_;
+  unsigned int size_;
 };
 
 struct stack_fixture_t : ::testing::Test

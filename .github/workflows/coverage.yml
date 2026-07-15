@@ -21,7 +21,7 @@ jobs:
       env:
         CXX: g++-10
       run: |
-        cmake -DCMAKE_BUILD_TYPE:STRING=Debug -DFETCH_3RD_PARTY_REPOS:BOOL=TRUE -DCI_MODE:STRING=COVERAGE  ..
+        cmake -DCMAKE_BUILD_TYPE:STRING=Debug -DCI_MODE:STRING=COVERAGE  ..
         make -j2
     - name: Run tests
       working-directory: build

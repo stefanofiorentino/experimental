@@ -40,7 +40,7 @@ public:
   void deallocate(void* p, std::size_t n) noexcept
   {
     unsigned char* d = static_cast<unsigned char*>(p);
-    memmove(d, d + n, size - (d - data) - n);
+    memmove(d, d + n, size - static_cast<size_t>(d - data) - n);
     offset -= n;
     memset(data + offset, '\0', size - offset);
   }

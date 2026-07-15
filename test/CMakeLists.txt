@@ -2,71 +2,34 @@
 # test based on googletest
 #
 
-option(FETCH_3RD_PARTY_REPOS "Fetch 3rd repos" OFF)
 include(FetchContent)
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
-if (FETCH_3RD_PARTY_REPOS)
-    FetchContent_Declare(
-        entt
-        GIT_REPOSITORY https://github.com/skypjack/entt.git
-        GIT_TAG v3.10.3
-        GIT_SHALLOW 1
-    )
+FetchContent_Declare(
+    entt
+    GIT_REPOSITORY https://github.com/skypjack/entt.git
+    GIT_TAG v3.16.0
+    GIT_SHALLOW 1
+)
+FetchContent_MakeAvailable(entt)
 
-    FetchContent_GetProperties(entt)
+FetchContent_Declare(
+    pugixml
+    GIT_REPOSITORY https://github.com/zeux/pugixml.git
+    GIT_SHALLOW 1
+)
+FetchContent_MakeAvailable(pugixml)
 
-    if(NOT entt_POPULATED)
-        FetchContent_Populate(entt)
-    endif()
-
-    FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG main
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(googletest)
-
-    if(NOT googletest_POPULATED)
-        FetchContent_Populate(googletest)
-        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    endif()
-
-    FetchContent_Declare(
-        libuv
-        GIT_REPOSITORY https://github.com/libuv/libuv.git
-        GIT_TAG master
-        GIT_SHALLOW 1
-    )
-
-    FetchContent_GetProperties(libuv)
-
-    if(NOT libuv_POPULATED)
-        FetchContent_Populate(libuv)
-    endif()
-
-else(FETCH_3RD_PARTY_REPOS)
-    set(entt_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/entt-src")
-    set(googletest_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/googletest-src")
-    set(googletest_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/googletest-build")
-    if(NOT EXISTS  ${googletest_SOURCE_DIR})
-        message(FATAL_ERROR "Cannot find the 3rd party repo: ${googletest_SOURCE_DIR}")
-    endif()
-    set(libuv_SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rd/libuv-src")
-    set(libuv_BINARY_DIR "${CMAKE_BINARY_DIR}/_deps/libuv-build")
-    if(NOT EXISTS  ${libuv_SOURCE_DIR})
-        message(FATAL_ERROR "Cannot find the 3rd party repo: ${libuv_SOURCE_DIR}")
-    endif()
-endif(FETCH_3RD_PARTY_REPOS)
-
-
-add_subdirectory(${libuv_SOURCE_DIR} ${libuv_BINARY_DIR} EXCLUDE_FROM_ALL)
-add_subdirectory("${googletest_SOURCE_DIR}" "${googletest_BINARY_DIR}" EXCLUDE_FROM_ALL)
-
+FetchContent_Declare(
+    googletest
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG main
+    GIT_SHALLOW 1
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
 add_library(GTest::Main ALIAS gtest_main)
 add_library(GMock::Main ALIAS gmock_main)
 
@@ -75,9 +38,40 @@ target_compile_features(gtest_main PUBLIC cxx_std_17)
 target_compile_features(gmock PUBLIC cxx_std_17)
 target_compile_features(gmock_main PUBLIC cxx_std_17)
 
+FetchContent_Declare(
+    libuv
+    GIT_REPOSITORY https://github.com/libuv/libuv.git
+    GIT_TAG master
+    GIT_SHALLOW 1
+)
 if(WIN32)
     set(WINSOCK2 ws2_32)
 endif()
+FetchContent_MakeAvailable(libuv)
+
+FetchContent_Declare(
+    libcoap
+    GIT_REPOSITORY https://github.com/obgm/libcoap.git
+    GIT_TAG main        # or a stable tag/version if you prefer
+    GIT_SHALLOW 1
+)
+FetchContent_MakeAvailable(libcoap)
+
+FetchContent_Declare(
+    googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG v1.8.3
+    GIT_SHALLOW 1
+)
+set(BENCHMARK_ENABLE_TESTING OFF)
+set(BENCHMARK_ENABLE_GTEST_TESTS OFF)
+set(BENCHMARK_USE_BUNDLED_GTEST OFF)
+set(BENCHMARK_ENABLE_INSTALL OFF)
+set(BENCHMARK_INSTALL_DOCS OFF)
+set(BENCHMARK_INSTALL_TOOLS OFF)
+FetchContent_MakeAvailable(googlebenchmark)
+target_compile_features(benchmark PUBLIC cxx_std_20)
+target_compile_features(benchmark_main PUBLIC cxx_std_20)
 
 function(ADD_UNIT_TEST_IMPL TEST_NAME TEST_SOURCE SHALL_FAIL CXX_STD)
     add_executable(${TEST_NAME} "${TEST_SOURCE}")
@@ -92,18 +86,21 @@ function(ADD_UNIT_TEST_IMPL TEST_NAME TEST_SOURCE SHALL_FAIL CXX_STD)
             ${LIBRT}
             ${WINSOCK2}
             uv_a
+            pugixml
     )
     target_include_directories(
         ${TEST_NAME}
             PRIVATE
         "${CMAKE_SOURCE_DIR}/include"
         "${entt_SOURCE_DIR}/src"
+        "${pugixml_SOURCE_DIR}/src"
     )
 
     target_include_directories(
         ${TEST_NAME}
             PUBLIC
         "${googletest_SOURCE_DIR}/googlemock/include"
+        "${libcoap_SOURCE_DIR}/include"
     )
 
     if(CI_MODE STREQUAL "COVERAGE")
@@ -118,6 +115,43 @@ function(ADD_UNIT_TEST_IMPL TEST_NAME TEST_SOURCE SHALL_FAIL CXX_STD)
     elseif(CI_MODE STREQUAL "THSAN" AND NOT ${TEST_NAME} MATCHES "memory_allocation")
         target_compile_options(${TEST_NAME} PUBLIC -fsanitize=thread -fno-sanitize-recover=all -fno-omit-frame-pointer)
         target_link_libraries(${TEST_NAME} PUBLIC -fsanitize=thread)
+    elseif(CI_MODE STREQUAL "BOUNDS")
+        target_compile_options(${TEST_NAME} PUBLIC -fsanitize=bounds)
+        target_link_libraries(${TEST_NAME} PUBLIC -fsanitize=bounds)
+    elseif(CI_MODE STREQUAL "TYPE_SAFETY")
+        if (NOT ${TEST_NAME} MATCHES "entt")
+            target_compile_options(
+                ${TEST_NAME}
+                    PUBLIC
+                -Wall
+                -Wextra
+                -Wpedantic
+                -Wconversion
+                -Wsign-conversion
+                -Wshadow
+                -Werror
+            )
+        endif()
+    elseif(CI_MODE STREQUAL "UNINITIALIZED")
+        if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+        OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+            target_compile_options(
+                ${TEST_NAME}
+                    PUBLIC
+                    -Wall
+                    -Wextra
+                    -Wuninitialized
+            )
+        else()
+            target_compile_options(
+                ${TEST_NAME}
+                    PUBLIC
+                    -Wall
+                    -Wextra
+                    -Wuninitialized
+                    -Wmaybe-uninitialized
+            )
+        endif()
     elseif(CI_MODE STREQUAL "MUTATION")
         target_compile_options(
             ${TEST_NAME}
@@ -126,7 +160,7 @@ function(ADD_UNIT_TEST_IMPL TEST_NAME TEST_SOURCE SHALL_FAIL CXX_STD)
             -fpass-plugin=/usr/lib/mull-ir-frontend-12
         )
     endif()
-    if (CI_MODE STREQUAL "THSAN" AND SHALL_FAIL)
+    if ((CI_MODE STREQUAL "THSAN" OR CI_MODE STREQUAL "UBSAN") AND SHALL_FAIL)
         add_test(
             NAME shall_fail_${TEST_NAME}
             COMMAND /bin/bash ${CMAKE_SOURCE_DIR}/scripts/shall_fail.sh $<TARGET_FILE:${TEST_NAME}>
@@ -155,6 +189,11 @@ endfunction()
 
 function(ADD_UNIT_TEST_CPP20 TEST_NAME TEST_SOURCE)
     ADD_UNIT_TEST_IMPL(${TEST_NAME} ${TEST_SOURCE} OFF cxx_std_20)
+endfunction()
+function(ADD_UNIT_TEST_FREESTANDING TEST_NAME TEST_SOURCE)
+    ADD_UNIT_TEST_IMPL(${TEST_NAME} ${TEST_SOURCE} OFF cxx_std_20)
+    target_compile_options(${TEST_NAME} PUBLIC -fno-exceptions -fno-rtti -ffreestanding)
+    target_link_libraries(${TEST_NAME} PUBLIC -fno-exceptions -fno-rtti -ffreestanding)
 endfunction()
 
 function(ADD_FAILING_UNIT_TEST_CPP20 TEST_NAME TEST_SOURCE)
@@ -194,14 +233,25 @@ if (${BUILD_GOOGLE_BASED_TESTS})
     ADD_UNIT_TEST_CPP20(zmq_ctx_new zmq_ctx_new.cpp)
     if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         ADD_FAILING_UNIT_TEST_CPP20(thread_safety thread_safety.cpp)
+        ADD_UNIT_TEST_CPP20(mkstemp mkstemp.cpp)
     endif()
     ADD_UNIT_TEST_CPP20(overload_set_macro overload_set_macro.cpp)
     ADD_UNIT_TEST_CPP20(overload_set_lambda overload_set_lambda.cpp)
     ADD_UNIT_TEST_CPP20(exceptional_stack exceptional_stack.cpp)
+    ADD_UNIT_TEST_CPP20(atomic_thread_fence_davide atomic_thread_fence.davide.cpp)
     ADD_UNIT_TEST_CPP20(atomic_thread_fence_cppref atomic_thread_fence.cppref.cpp)
+    ADD_UNIT_TEST_CPP20(consteval consteval.cpp)
     ADD_UNIT_TEST_CPP20(placement_new placement_new.cpp)
+    
     ADD_UNIT_TEST_CPP20(sdk_impl sdk_impl.cpp)
+    ADD_UNIT_TEST_CPP20(mockNonVirtualMethod mockNonVirtualMethod.cpp)
+    ADD_UNIT_TEST_CPP20(coap coap.cpp)
+    # ADD_UNIT_TEST_CPP20(matteo matteo.cpp)
     target_link_libraries(sdk_impl PRIVATE sdk)
+
+    ADD_UNIT_TEST_CPP20(out out.cpp)
+    ADD_UNIT_TEST_FREESTANDING(freestanding_array freestanding_array.cpp)
+    
 
 
     ADD_FAILING_UNIT_TEST(thread_unsafe_class thread_unsafe_class.cpp)

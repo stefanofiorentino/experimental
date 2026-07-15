@@ -31,7 +31,7 @@ free_data_and_clear(int** data)
   }
 }
 void
-use_data(int* data)
+use_data(int const* data)
 {
   cout << *data << endl;
 }

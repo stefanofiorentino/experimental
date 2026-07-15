@@ -1,3 +1,4 @@
+#include <array>
 #include <gmock/gmock.h>
 #include <stdexcept>
 

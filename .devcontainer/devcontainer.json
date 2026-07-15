@@ -8,6 +8,7 @@
 	"mounts": [
 		"source=${localWorkspaceFolder}/build,target=/workspaces/experimental/build,type=bind,consistency=cached"
 	],
+	"runArgs": ["--user=502:502"],
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -17,7 +18,9 @@
 				"rogalmic.bash-debug",
 				"davidanson.vscode-markdownlint",
 				"ms-vscode-remote.remote-containers",
-				"ryanluker.vscode-coverage-gutters"
+				"ryanluker.vscode-coverage-gutters",
+				"mhutchie.git-graph",
+				"github.vscode-github-actions"
 			]
 		}
 	}

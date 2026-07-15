@@ -13,15 +13,15 @@ struct room_t final
     children_.emplace_back(std::forward<T>(t));
   }
 
-  void draw(std::ostream& oss) const
+  void draw(std::ostream& oss, size_t position) const
   {
     if (children_.empty()) {
-      oss << "<room_t/>\n";
+      oss << std::string(position, ' ') << "<room_t/>\n";
       return;
     }
-    oss << "<room_t>\n";
-    ::draw(children_, oss, 0);
-    oss << "</room_t>\n";
+    oss << std::string(position, ' ') << "<room_t>\n";
+    ::draw(children_, oss, position);
+    oss << std::string(position, ' ') << "</room_t>\n";
   }
 
   collection_t children_;
@@ -29,7 +29,7 @@ struct room_t final
 
 template<>
 inline void
-draw(const room_t& room, std::ostream& out, size_t /* position */)
+draw(const room_t& room, std::ostream& out, size_t position)
 {
-  room.draw(out);
+  room.draw(out, position);
 }

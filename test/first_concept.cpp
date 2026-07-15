@@ -1,4 +1,5 @@
 #include <concepts>
+#include <gmock/gmock.h>
 
 template<typename T>
 concept has_draw_member_function = requires(T v)
@@ -8,16 +9,22 @@ concept has_draw_member_function = requires(T v)
     } -> std::convertible_to<void>;
 };
 
-int
-main()
-{
-  struct invalid
-  {};
-  static_assert(!has_draw_member_function<invalid>);
+struct invalid
+{};
 
-  struct valid
-  {
-    void draw() {}
-  };
-  static_assert(has_draw_member_function<valid>);
+struct valid
+{
+  void draw() {}
+};
+
+TEST(first_concept, simple)
+{
+
+  if constexpr (has_draw_member_function<invalid>) {
+    ASSERT_TRUE(false);
+  }
+
+  if constexpr (!has_draw_member_function<valid>) {
+    ASSERT_TRUE(false);
+  }
 }

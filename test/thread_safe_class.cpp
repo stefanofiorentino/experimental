@@ -18,10 +18,10 @@ public:
     return status;
   }
 
-  void setStatus(bool status)
+  void setStatus(bool _status)
   {
     std::lock_guard<std::mutex> lg{ mtx };
-    thread_safe::status = status;
+    thread_safe::status = _status;
   }
 };
 
@@ -48,10 +48,10 @@ TEST(thread_safe, thsan)
   ASSERT_FALSE(status);
 
   auto th1 =
-    reallyAsync([](thread_safe& ts) { ts.setStatus(true); }, std::ref(ts));
+    reallyAsync([](thread_safe& _ts) { _ts.setStatus(true); }, std::ref(ts));
 
   auto th2 = reallyAsync(
-    [](thread_safe const& ts, bool& status) { status = ts.getStatus(); },
+    [](thread_safe const& _ts, bool& _status) { _status = _ts.getStatus(); },
     std::cref(ts),
     std::ref(status));
 }
